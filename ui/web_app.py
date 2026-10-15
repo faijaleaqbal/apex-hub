@@ -1,6 +1,5 @@
 import os
 import sys
-import socket
 import threading
 import webview
 
@@ -15,15 +14,13 @@ from core.screen_glow_service import screen_glow_service
 from core.config_manager import config_manager
 from core.device_detector import device_detector
 
-IPC_PORT = 39842
-
 class ApexApi:
     def __init__(self, window=None):
-        self.window = window
+        self._window = window
         self.allow_exit = False
 
     def set_window(self, window):
-        self.window = window
+        self._window = window
 
     def get_initial_state(self):
         cfg = config_manager.config
@@ -239,47 +236,41 @@ class ApexApi:
         keyboard_service.stop_hook()
         mouse_service.stop_autoclicker()
         screen_glow_service.stop_overlay()
-        if self.window:
-            self.window.destroy()
+        if self._window:
+            self._window.destroy()
         os._exit(0)
 
-def check_single_instance():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.bind(('127.0.0.1', IPC_PORT))
-        return s, True
-    except Exception:
-        # Already running: signal existing instance to show its window
-        try:
-            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect(('127.0.0.1', IPC_PORT))
-            client.sendall(b'SHOW')
-            client.close()
-        except Exception:
-            pass
-        return None, False
+_app_mutex = None
 
-def start_ipc_server(sock, window):
-    sock.listen(5)
-    def loop():
-        while True:
-            try:
-                conn, _ = sock.accept()
-                data = conn.recv(1024)
-                if data == b'SHOW':
-                    window.show()
-                    window.restore()
-                conn.close()
-            except Exception:
-                break
-    t = threading.Thread(target=loop, daemon=True)
-    t.start()
+def ensure_single_instance_or_focus():
+    """
+    Ensure single instance using Windows Named Mutex:
+    1. If mutex exists, an instance is already running; restore its window to foreground and exit.
+    2. Otherwise, hold mutex and proceed to launch the main window.
+    """
+    global _app_mutex
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        user32 = ctypes.windll.user32
+        ERROR_ALREADY_EXISTS = 183
+
+        _app_mutex = kernel32.CreateMutexW(None, False, "ApexHubSingleInstanceMutex_v2")
+        if kernel32.GetLastError() == ERROR_ALREADY_EXISTS:
+            hwnd = user32.FindWindowW(None, "Apex Hub - Gaming Peripheral Suite")
+            if hwnd:
+                SW_RESTORE = 9
+                user32.ShowWindow(hwnd, SW_RESTORE)
+                user32.SetForegroundWindow(hwnd)
+            return False
+    except Exception:
+        pass
+
+    return True
 
 def launch_web_gui():
-    # 1. Single Instance Check
-    ipc_sock, is_primary = check_single_instance()
-    if not is_primary:
-        # Already running and pinged; exit this second process
+    # 1. Single Instance Check & Window Focus
+    if not ensure_single_instance_or_focus():
         sys.exit(0)
 
     # 2. Start global low-level hooks
@@ -330,16 +321,12 @@ def launch_web_gui():
     )
     api.set_window(window)
 
-    # Start IPC server so secondary launches bring this window forward
-    start_ipc_server(ipc_sock, window)
-
     def on_closing():
         config_manager.save_config()
-        if api.allow_exit:
-            return True
-        # Keep hooks, WinLock, and auto-clicker running in background!
-        window.hide()
-        return False
+        keyboard_service.stop_hook()
+        mouse_service.stop_autoclicker()
+        screen_glow_service.stop_overlay()
+        return True
 
     def on_closed():
         config_manager.save_config()
