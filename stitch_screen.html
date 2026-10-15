@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Apex Hub Pro // Suite v2.4</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed": "#efdbff",
+            "surface-dim": "#0f131c",
+            "surface": "#0f131c",
+            "tertiary-container": "#00f899",
+            "on-error": "#690005",
+            "tertiary-fixed": "#56ffa8",
+            "on-background": "#dfe2ee",
+            "on-surface": "#dfe2ee",
+            "secondary": "#dcb8ff",
+            "surface-container-high": "#262a33",
+            "on-tertiary-fixed": "#002110",
+            "primary-fixed": "#7df4ff",
+            "on-surface-variant": "#b9cacb",
+            "on-tertiary": "#00391f",
+            "surface-container-low": "#181c24",
+            "on-tertiary-container": "#006d40",
+            "on-tertiary-fixed-variant": "#00522f",
+            "surface-container": "#1c2028",
+            "on-primary-fixed": "#002022",
+            "inverse-primary": "#006970",
+            "background": "#0f131c",
+            "surface-tint": "#00dbe9",
+            "surface-bright": "#353942",
+            "inverse-surface": "#dfe2ee",
+            "secondary-fixed-dim": "#dcb8ff",
+            "error": "#ffb4ab",
+            "outline": "#849495",
+            "tertiary": "#d9ffe2",
+            "on-primary-container": "#006970",
+            "on-primary": "#00363a",
+            "surface-container-lowest": "#0a0e16",
+            "surface-variant": "#31353e",
+            "surface-container-highest": "#31353e",
+            "primary": "#dbfcff",
+            "primary-fixed-dim": "#00dbe9",
+            "on-primary-fixed-variant": "#004f54",
+            "inverse-on-surface": "#2c3039",
+            "on-error-container": "#ffdad6",
+            "on-secondary-fixed": "#2c0051",
+            "tertiary-fixed-dim": "#00e38b",
+            "secondary-container": "#7701d0",
+            "on-secondary": "#480081",
+            "outline-variant": "#3b494b",
+            "on-secondary-container": "#dcb7ff",
+            "error-container": "#93000a",
+            "primary-container": "#00f0ff",
+            "on-secondary-fixed-variant": "#6700b5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-xl": "2rem",
+            "margin": "1.5rem",
+            "space-xs": "0.25rem",
+            "gutter-compact": "0.5rem",
+            "space-sm": "0.5rem",
+            "margin-compact": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "headline-xl": ["Space Grotesk"],
+            "body-lg": ["Inter"],
+            "label-md": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "label-lg": ["JetBrains Mono"],
+            "label-sm": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "title-sm": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "title-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom cyber dot grid & scanline ambiance */
+    .bg-dot-matrix {
+      background-image: radial-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .neon-cyan-glow {
+      box-shadow: 0 0 16px -2px rgba(0, 240, 255, 0.45);
+    }
+    .neon-cyan-glow-subtle {
+      box-shadow: 0 0 8px 0 rgba(0, 240, 255, 0.25);
+    }
+    .neon-violet-glow {
+      box-shadow: 0 0 20px -3px rgba(138, 43, 226, 0.4);
+    }
+    .inset-hardware-well {
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.85);
+    }
+    /* Pulse badge */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.92); }
+    }
+    .animate-telemetry {
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0e16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #31353e;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f0ff;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface antialiased overflow-hidden select-none h-screen flex flex-col font-body-md text-body-md">
+<!-- ========================================================================= -->
+<!-- 1. TOP TITLEBAR (Strictly follows Shared Component JSON for TopNavBar)   -->
+<!-- ========================================================================= -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-outline-variant/30 shadow-sm docked full-width top-0 h-10 flex justify-between items-center w-full px-4 select-none z-50">
+<!-- Left segment: Identity & System Sync -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px] animate-pulse" data-icon="terminal">terminal</span>
+<span class="font-headline-md text-headline-md tracking-wider text-primary dark:text-primary uppercase">APEX HUB</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-high text-primary-container border border-primary-container/30">SUITE V2.4</span>
+</div>
+<div class="h-3.5 w-[1px] bg-outline-variant/40 mx-1"></div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-low border border-tertiary-container/20">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-telemetry"></span>
+<span class="font-label-sm text-label-sm text-tertiary-container font-semibold tracking-wider">ALL HARDWARE SYNCHRONIZED</span>
+</div>
+</div>
+<!-- Center segment: Quick Global Profile & Master Dimmer -->
+<div class="hidden md:flex items-center gap-4 bg-surface-container-low px-3 py-1 rounded border border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="sports_esports">sports_esports</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">ACTIVE PROFILE:</span>
+<span class="font-label-sm text-label-sm text-primary-container font-bold">[FPS // TOURNAMENT HYPER]</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px] cursor-pointer hover:text-primary transition-colors" data-icon="expand_more">expand_more</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant/30"></div>
+<!-- Master Dimmer Slider -->
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[15px]" data-icon="wb_sunny">wb_sunny</span>
+<div class="w-20 h-1.5 bg-surface-container-lowest rounded-full relative overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-gradient-to-r from-secondary-container to-primary-container w-[85%] rounded-full"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">85%</span>
+</div>
+<!-- Master Audio -->
+<div class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px]" data-icon="volume_up">volume_up</span>
+</div>
+</div>
+<!-- Right segment: Telemetry & Windows Titlebar Actions (exact icons from JSON) -->
+<div class="flex items-center gap-3">
+<!-- Ultra-low latency badge -->
+<div class="hidden sm:flex items-center gap-2 px-2 py-0.5 bg-surface-container-high rounded text-on-surface border border-outline-variant/30 font-label-sm text-label-sm">
+<span class="text-primary-container font-bold">0.8ms</span>
+<span class="text-outline-variant font-mono">|</span>
+<span class="text-on-surface-variant font-mono">2.4GHz 8000Hz</span>
+</div>
+<!-- JSON actions: ["sync", "signal_cellular_alt", "remove", "crop_square", "close"] -->
+<div class="flex items-center">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors active:scale-95 duration-150" title="Sync Hardware">
+<span class="material-symbols-outlined text-[16px]" data-icon="sync">sync</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors active:scale-95 duration-150" title="Wireless Telemetry">
+<span class="material-symbols-outlined text-[16px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+</button>
+<div class="h-3 w-[1px] bg-outline-variant/30 mx-1"></div>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors active:scale-95 duration-150" title="Minimize">
+<span class="material-symbols-outlined text-[16px]" data-icon="remove">remove</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors active:scale-95 duration-150" title="Maximize">
+<span class="material-symbols-outlined text-[16px]" data-icon="crop_square">crop_square</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-error-container hover:text-error transition-colors active:scale-95 duration-150" title="Close">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE LAYOUT (SIDEBAR + COMMAND CENTER)                           -->
+<!-- ========================================================================= -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- ======================================================================= -->
+<!-- 2. LEFT SIDEBAR (Strictly follows Shared Component JSON for SideNavBar) -->
+<!-- ======================================================================= -->
+<aside class="bg-surface-container-lowest dark:bg-surface-container-lowest border-r border-outline-variant/30 shadow-lg shadow-surface-container-lowest/80 docked left-0 top-10 h-[calc(100vh-2.5rem)] w-60 flex flex-col justify-between p-space-sm z-40 shrink-0 select-none">
+<!-- Top Section: Brand Emblem & Navigation Cluster -->
+<div class="flex flex-col gap-4">
+<!-- Header Info -->
+<div class="px-2 pt-2 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-surface-container-high border border-primary-container/40 flex items-center justify-center text-primary-container neon-cyan-glow-subtle">
+<span class="material-symbols-outlined text-[18px]" data-icon="developer_board">developer_board</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-widest text-[14px] leading-tight">APEX HUB</div>
+<div class="font-label-sm text-label-sm text-outline tracking-wider">V2.4 PRO</div>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-tertiary-container shadow-[0_0_8px_#00f899]"></span>
+</div>
+<div class="h-[1px] bg-outline-variant/20 mx-1"></div>
+<!-- 5 Tab items from JSON -->
+<!-- tab_labels: ["Dashboard", "Mouse Controls", "Keyboard Remap", "Mech Sound FX", "Screen Ambient RGB"] -->
+<!-- tab_icons: ["dashboard", "mouse", "keyboard", "volume_up", "palette"] -->
+<nav class="flex flex-col gap-1">
+<!-- Tab 1: Dashboard (ACTIVE - matches style_active_navigation) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-container-high/80 text-primary-container dark:text-primary-container border-l-2 border-primary-container font-semibold transition-all active:scale-98 duration-100 ease-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md tracking-wide">Dashboard</span>
+</a>
+<!-- Tab 2: Mouse Controls (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-primary dark:hover:text-primary transition-all active:scale-98 duration-100 ease-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="mouse">mouse</span>
+<span class="font-label-md text-label-md tracking-wide">Mouse Controls</span>
+</a>
+<!-- Tab 3: Keyboard Remap (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-primary dark:hover:text-primary transition-all active:scale-98 duration-100 ease-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="keyboard">keyboard</span>
+<span class="font-label-md text-label-md tracking-wide">Keyboard Remap</span>
+</a>
+<!-- Tab 4: Mech Sound FX (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-primary dark:hover:text-primary transition-all active:scale-98 duration-100 ease-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="volume_up">volume_up</span>
+<span class="font-label-md text-label-md tracking-wide">Mech Sound FX</span>
+</a>
+<!-- Tab 5: Screen Ambient RGB (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-primary dark:hover:text-primary transition-all active:scale-98 duration-100 ease-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="palette">palette</span>
+<span class="font-label-md text-label-md tracking-wide">Screen Ambient RGB</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Sidebar Utility & CTA from JSON -->
+<div class="flex flex-col gap-2 pt-2 border-t border-outline-variant/30">
+<!-- CTA: SYNC PROFILES -->
+<button class="w-full py-2 px-3 rounded bg-surface-container-high border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-surface-container-lowest font-label-md text-label-md font-bold uppercase transition-all duration-150 flex items-center justify-center gap-2 neon-cyan-glow-subtle active:scale-95">
+<span class="material-symbols-outlined text-[16px]" data-icon="sync">sync</span>
+          SYNC PROFILES
+        </button>
+<!-- Footer Tab 1: Firmware Updates -->
+<a class="flex items-center justify-between px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all text-xs" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="system_update">system_update</span>
+<span class="font-label-md text-label-md">Firmware Updates</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+</a>
+<!-- Footer Tab 2: Settings -->
+<a class="flex items-center gap-2 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all text-xs" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- ======================================================================= -->
+<!-- 3. MAIN CENTRAL COMMAND AREA (Bento / Modular Grid Workspace)          -->
+<!-- ======================================================================= -->
+<main class="flex-1 flex flex-col bg-surface-container-lowest overflow-y-auto bg-dot-matrix relative p-space-md lg:p-space-lg gap-space-md">
+<!-- Breadcrumbs & Tactical Command Center Header -->
+<div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline-variant/20">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container border border-primary-container/30 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</div>
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<span>WORKSTATION</span>
+<span>/</span>
+<span>ESP-NODE-01</span>
+<span>/</span>
+<span class="text-primary-container">ACTIVE PERIPHERALS</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">DEVICE COMMAND CENTER</h1>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<!-- Auto Profile Badge -->
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-surface-container border border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="autorenew">autorenew</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Auto-Profile Switching:</span>
+<span class="font-label-sm text-label-sm text-tertiary-container font-semibold">Enabled</span>
+</div>
+<!-- Total Battery Telemetry Chip -->
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-surface-container-high border border-outline-variant/40">
+<span class="material-symbols-outlined text-tertiary-container text-[16px]" data-icon="battery_charging_full">battery_charging_full</span>
+<span class="font-label-sm text-label-sm text-on-surface font-mono">ALL NODES OK</span>
+</div>
+</div>
+</div>
+<!-- ===================================================================== -->
+<!-- 2-COLUMN PERIPHERAL CARDS GRID                                        -->
+<!-- ===================================================================== -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
+<!-- =================================================================== -->
+<!-- CARD 1: KARNAGE VISAGE TRI-MODE MECHANICAL KEYBOARD                 -->
+<!-- =================================================================== -->
+<div class="rounded-lg bg-surface-container/60 backdrop-blur-md border border-outline-variant/40 hover:border-secondary/40 transition-all duration-300 p-space-md flex flex-col justify-between relative overflow-hidden group">
+<!-- Subtle corner accent line -->
+<div class="absolute top-0 right-0 w-24 h-[2px] bg-gradient-to-l from-secondary to-transparent"></div>
+<div>
+<!-- Header Section -->
+<div class="flex items-start justify-between gap-3 pb-3 border-b border-outline-variant/20">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-secondary font-mono tracking-widest uppercase">WLKM-054</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/30 border border-secondary/30 text-secondary font-label-sm text-label-sm">KEYBOARD DECK</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight mt-1">Karnage Visage Tri-Mode</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-container shadow-[0_0_6px_#00f899]"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Connected // 2.4GHz Ultra-Speed Wireless</span>
+</div>
+</div>
+<!-- Battery Ring Telemetry -->
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded border border-outline-variant/30">
+<div class="text-right">
+<div class="font-label-lg text-label-lg font-bold text-tertiary-container leading-none">92%</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">~68h Left</div>
+</div>
+<span class="material-symbols-outlined text-tertiary-container text-[22px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Visual Showcase / Keyboard Wireframe Render -->
+<div class="mt-4 p-4 rounded bg-surface-container-lowest/80 border border-outline-variant/30 relative flex flex-col items-center justify-center overflow-hidden">
+<!-- Cyber grid ambient light -->
+<div class="absolute inset-0 bg-gradient-to-b from-secondary-container/10 via-transparent to-primary-container/5 pointer-events-none"></div>
+<!-- Keyboard Deck Diagram Simulation -->
+<div class="w-full max-w-lg bg-surface-container-high rounded p-2.5 border border-outline-variant/60 shadow-lg relative z-10">
+<!-- Top Key Row Sim -->
+<div class="grid grid-cols-12 gap-1 mb-1">
+<div class="h-6 rounded bg-surface-variant flex items-center justify-center text-[9px] font-mono text-primary font-bold border border-primary/30">ESC</div>
+<div class="col-span-8 grid grid-cols-8 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F1</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F2</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F3</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F4</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F5</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F6</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F7</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F8</div>
+</div>
+<div class="col-span-3 grid grid-cols-3 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">PRT</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">DEL</div>
+<div class="h-6 rounded-full bg-secondary-container flex items-center justify-center border border-secondary text-on-secondary-container text-[9px] font-mono font-bold shadow-[0_0_8px_#7701d0]">VOL</div>
+</div>
+</div>
+<!-- Number & Alpha rows preview with dynamic backlighting -->
+<div class="space-y-1">
+<!-- Number row -->
+<div class="grid grid-cols-13 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">~</div>
+<div class="h-6 rounded bg-surface-container-low text-primary-container text-[9px] font-mono flex items-center justify-center col-span-1 border-b border-primary-container">1</div>
+<div class="h-6 rounded bg-surface-container-low text-primary-container text-[9px] font-mono flex items-center justify-center col-span-1 border-b border-primary-container">2</div>
+<div class="h-6 rounded bg-surface-container-low text-primary-container text-[9px] font-mono flex items-center justify-center col-span-1 border-b border-primary-container">3</div>
+<div class="h-6 rounded bg-surface-container-low text-secondary text-[9px] font-mono flex items-center justify-center col-span-1 border-b border-secondary">4</div>
+<div class="h-6 rounded bg-surface-container-low text-secondary text-[9px] font-mono flex items-center justify-center col-span-1 border-b border-secondary">5</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">6</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">7</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">8</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">9</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">0</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">BKSP</div>
+</div>
+<!-- QWERTY row (WASD highlighted) -->
+<div class="grid grid-cols-13 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">TAB</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">Q</div>
+<div class="h-6 rounded bg-primary-container/20 border border-primary-container text-primary font-bold text-[9px] font-mono flex items-center justify-center shadow-[0_0_8px_rgba(0,240,255,0.4)]">W</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">E</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">R</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">T</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">Y</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">U</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">I</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">O</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">P</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">\</div>
+</div>
+<!-- ASDF row -->
+<div class="grid grid-cols-13 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">CAPS</div>
+<div class="h-6 rounded bg-primary-container/20 border border-primary-container text-primary font-bold text-[9px] font-mono flex items-center justify-center shadow-[0_0_8px_rgba(0,240,255,0.4)]">A</div>
+<div class="h-6 rounded bg-primary-container/20 border border-primary-container text-primary font-bold text-[9px] font-mono flex items-center justify-center shadow-[0_0_8px_rgba(0,240,255,0.4)]">S</div>
+<div class="h-6 rounded bg-primary-container/20 border border-primary-container text-primary font-bold text-[9px] font-mono flex items-center justify-center shadow-[0_0_8px_rgba(0,240,255,0.4)]">D</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">F</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">G</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">H</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">J</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">K</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center">L</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">ENTER</div>
+</div>
+<!-- Spacebar row -->
+<div class="grid grid-cols-12 gap-1">
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">L-CTRL</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">WIN</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">ALT</div>
+<div class="h-6 rounded bg-gradient-to-r from-primary-container/20 via-secondary-container/30 to-primary-container/20 border border-outline-variant flex items-center justify-center col-span-5 text-[9px] font-mono text-outline">SPACE // AURORA</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-1">FN</div>
+<div class="h-6 rounded bg-surface-container text-on-surface-variant text-[9px] font-mono flex items-center justify-center col-span-2">R-CTRL</div>
+</div>
+</div>
+</div>
+<!-- Actuation live metric indicator -->
+<div class="mt-3 flex items-center justify-between w-full max-w-lg px-2">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>Hall-Effect Rapid Trigger: <strong class="text-primary-container font-mono">0.2mm - 3.8mm</strong></span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-mono">RGB: Reactive Spectrum Wave</span>
+</div>
+</div>
+<!-- Rotary Knob & Hardware Matrix Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+<!-- Rotary Dial Status -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant/30 flex items-center gap-3">
+<div class="w-12 h-12 rounded-full border-2 border-primary-container flex items-center justify-center relative neon-cyan-glow-subtle shrink-0">
+<div class="w-2 h-2 rounded-full bg-primary-container absolute top-1"></div>
+<span class="font-label-sm text-label-sm text-primary font-bold">CNC</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Multifunction CNC Dial</div>
+<div class="font-label-md text-label-md text-on-surface font-semibold text-xs">Active [Volume / Scroll / RGB Hue]</div>
+<div class="font-label-sm text-label-sm text-primary-container">Step Sensitivity: Fine (15 deg)</div>
+</div>
+</div>
+<!-- Actuation Sensitivity Bar -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col justify-center">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Rapid Trigger Sens.</span>
+<span class="font-label-sm text-label-sm text-primary-container font-mono font-bold">0.2mm</span>
+</div>
+<div class="w-full h-2 bg-surface-container-lowest rounded-full overflow-hidden inset-hardware-well">
+<div class="h-full bg-gradient-to-r from-primary-container to-secondary rounded-full w-[25%]"></div>
+</div>
+<div class="flex justify-between text-[9px] text-outline mt-1 font-mono">
+<span>0.1mm ULTRA</span>
+<span>2.0mm STD</span>
+<span>4.0mm MAX</span>
+</div>
+</div>
+</div>
+<!-- Hardware RGB Shortcuts Matrix -->
+<div class="mt-3 p-3 rounded bg-surface-container-low border border-outline-variant/30">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Hardware Fn Key Shortcuts Matrix</span>
+<span class="font-label-sm text-label-sm text-secondary">Quick Profiles</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+<div class="px-2 py-1.5 rounded bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-label-sm text-label-sm text-primary-container font-mono font-bold">Fn + Ins</div>
+<div class="text-[10px] text-on-surface-variant truncate">Reactive Pulse</div>
+</div>
+<div class="px-2 py-1.5 rounded bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-label-sm text-label-sm text-secondary font-mono font-bold">Fn + Del</div>
+<div class="text-[10px] text-on-surface-variant truncate">Aurora Sweep</div>
+</div>
+<div class="px-2 py-1.5 rounded bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-label-sm text-label-sm text-primary font-mono font-bold">Fn + Home</div>
+<div class="text-[10px] text-on-surface-variant truncate">Cyber Wave</div>
+</div>
+<div class="px-2 py-1.5 rounded bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-label-sm text-label-sm text-tertiary-container font-mono font-bold">Fn + End</div>
+<div class="text-[10px] text-on-surface-variant truncate">Static Ice Cyan</div>
+</div>
+</div>
+</div>
+<!-- Telemetry Badges row -->
+<div class="flex flex-wrap items-center gap-3 mt-4 text-xs font-mono">
+<span class="text-on-surface-variant">POLLING: <strong class="text-on-surface">4000Hz</strong></span>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant">DEBOUNCE: <strong class="text-primary-container">1ms</strong></span>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant">ONBOARD: <strong class="text-secondary">SLOT 1/5 ACTIVE</strong></span>
+</div>
+</div>
+<!-- Quick Action button -->
+<div class="mt-5 pt-3 border-t border-outline-variant/20 flex justify-end">
+<button class="px-4 py-2 rounded bg-surface-container-high border border-secondary/50 text-secondary hover:bg-secondary-container hover:text-white font-label-md text-label-md font-bold uppercase transition-all duration-150 flex items-center gap-2 neon-violet-glow active:scale-98">
+<span class="material-symbols-outlined text-[16px]" data-icon="grid_view">grid_view</span>
+              Open Full Keymap Matrix
+            </button>
+</div>
+</div>
+<!-- =================================================================== -->
+<!-- CARD 2: ARCTIC FOX WIRELESS GAMING MOUSE                            -->
+<!-- =================================================================== -->
+<div class="rounded-lg bg-surface-container/60 backdrop-blur-md border border-outline-variant/40 hover:border-primary-container/40 transition-all duration-300 p-space-md flex flex-col justify-between relative overflow-hidden group">
+<!-- Subtle corner accent line -->
+<div class="absolute top-0 right-0 w-24 h-[2px] bg-gradient-to-l from-primary-container to-transparent"></div>
+<div>
+<!-- Header Section -->
+<div class="flex items-start justify-between gap-3 pb-3 border-b border-outline-variant/20">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-primary-container font-mono tracking-widest uppercase">AFW-PRO-8K</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/10 border border-primary-container/30 text-primary-container font-label-sm text-label-sm">OPTICAL SENSOR</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight mt-1">Arctic Fox Wireless</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-container shadow-[0_0_6px_#00f899]"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Connected // Slipstream 2.4G (8000Hz)</span>
+</div>
+</div>
+<!-- Battery Ring Telemetry -->
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded border border-outline-variant/30">
+<div class="text-right">
+<div class="font-label-lg text-label-lg font-bold text-tertiary-container leading-none">78%</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Fast-Charge 20W</div>
+</div>
+<span class="material-symbols-outlined text-tertiary-container text-[22px]" data-icon="bolt">bolt</span>
+</div>
+</div>
+<!-- Visual Showcase / Mouse Honeycomb Render Simulation -->
+<div class="mt-4 p-4 rounded bg-surface-container-lowest/80 border border-outline-variant/30 relative flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary-container/10 via-transparent to-transparent pointer-events-none"></div>
+<!-- Stylized Vector Mouse HUD -->
+<div class="w-48 h-36 relative flex items-center justify-center">
+<!-- Outer contour silhouette -->
+<div class="w-28 h-36 rounded-[34px] border-2 border-outline-variant/80 bg-surface-container-high/60 relative flex flex-col items-center justify-between py-2 shadow-2xl">
+<!-- Left/Right Click split line -->
+<div class="w-[1px] h-12 bg-outline-variant absolute top-0"></div>
+<!-- Scroll Wheel -->
+<div class="w-3.5 h-7 rounded-sm bg-surface-container-lowest border border-primary-container flex items-center justify-center relative z-10 neon-cyan-glow-subtle">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+<!-- Honeycomb vents simulation -->
+<div class="grid grid-cols-3 gap-1 opacity-70 my-1">
+<div class="w-2 h-2 rounded-sm bg-outline-variant/60"></div>
+<div class="w-2 h-2 rounded-sm bg-primary-container/60"></div>
+<div class="w-2 h-2 rounded-sm bg-outline-variant/60"></div>
+<div class="w-2 h-2 rounded-sm bg-secondary/60"></div>
+<div class="w-2 h-2 rounded-sm bg-outline-variant/60"></div>
+<div class="w-2 h-2 rounded-sm bg-primary-container/60"></div>
+</div>
+<!-- Logo Glow Bottom -->
+<div class="w-6 h-6 rounded-full border border-primary-container/40 flex items-center justify-center text-primary-container text-[10px] font-mono font-bold">
+                    AF
+                  </div>
+<!-- Side Thumb button tag -->
+<div class="absolute -left-2 top-14 w-1.5 h-6 rounded-l bg-secondary border border-secondary shadow-[0_0_8px_#8A2BE2]"></div>
+</div>
+<!-- Live Sensor Specs floating HUD -->
+<div class="absolute left-2 top-3 font-label-sm text-label-sm text-left">
+<div class="text-outline">TRACKING:</div>
+<div class="text-on-surface font-mono font-bold">650 IPS</div>
+</div>
+<div class="absolute right-2 top-3 font-label-sm text-label-sm text-right">
+<div class="text-outline">ACCELERATION:</div>
+<div class="text-on-surface font-mono font-bold">50 G</div>
+</div>
+</div>
+</div>
+<!-- DPI Stepped Slider & Stages Matrix -->
+<div class="mt-4 p-3 rounded bg-surface-container-low border border-outline-variant/30">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Active DPI Resolution Matrix</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container/20 text-primary-container font-mono font-bold">
+                  STAGE 3: 1600 DPI
+                </span>
+</div>
+<!-- Interactive Stepped Progress Track -->
+<div class="relative py-2">
+<div class="w-full h-2 bg-surface-container-lowest rounded-full inset-hardware-well relative">
+<!-- Stepped fill to stage 3 -->
+<div class="h-full bg-gradient-to-r from-secondary to-primary-container rounded-full w-[45%]"></div>
+</div>
+<!-- Stepped markers -->
+<div class="flex justify-between items-center mt-2 px-1 text-[11px] font-mono">
+<div class="text-on-surface-variant cursor-pointer hover:text-primary">400</div>
+<div class="text-on-surface-variant cursor-pointer hover:text-primary">800</div>
+<div class="text-primary-container font-bold px-1.5 py-0.5 rounded bg-primary-container/10 border border-primary-container/40">1600</div>
+<div class="text-on-surface-variant cursor-pointer hover:text-primary">3200</div>
+<div class="text-on-surface-variant cursor-pointer hover:text-primary">6400</div>
+<div class="text-outline cursor-pointer hover:text-primary">26000</div>
+</div>
+</div>
+</div>
+<!-- Sniper Clutch & Quick Toggles Row -->
+<div class="mt-3 space-y-2">
+<!-- Sniper Mode Trigger Indicator -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="filter_center_focus">filter_center_focus</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface font-semibold">Sniper Clutch (Thumb Button)</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">400 DPI Precision Lock [ACTIVE ON HOLD]</div>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-secondary-container/40 border border-secondary text-on-secondary-container font-mono font-semibold">
+                  M4 / HOLD
+                </span>
+</div>
+<!-- Micro Toggles Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<!-- F6 Auto Clicker -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">F6 Auto-Clicker</span>
+<!-- Hardware Toggle Switch (ON) -->
+<div class="w-9 h-5 rounded-full bg-primary-container/20 border border-primary-container relative cursor-pointer flex items-center p-0.5">
+<div class="w-3.5 h-3.5 rounded-full bg-primary-container translate-x-4 shadow-[0_0_8px_#00f0ff] transition-transform"></div>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary-container font-mono font-semibold mt-1">42 CPS Burst</span>
+</div>
+<!-- Motion Sync -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Motion Sync</span>
+<div class="w-9 h-5 rounded-full bg-primary-container/20 border border-primary-container relative cursor-pointer flex items-center p-0.5">
+<div class="w-3.5 h-3.5 rounded-full bg-primary-container translate-x-4 shadow-[0_0_8px_#00f0ff] transition-transform"></div>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary-container font-mono font-semibold mt-1">Zero Jitter</span>
+</div>
+<!-- LOD Lift-Off -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Lift-Off (LOD)</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]" data-icon="height">height</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-mono font-semibold mt-1">Low (1.0 mm)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Action button -->
+<div class="mt-5 pt-3 border-t border-outline-variant/20 flex justify-end">
+<button class="px-4 py-2 rounded bg-primary-container text-on-primary-container hover:bg-primary-fixed hover:text-on-primary font-label-md text-label-md font-bold uppercase transition-all duration-150 flex items-center gap-2 neon-cyan-glow active:scale-98">
+<span class="material-symbols-outlined text-[16px]" data-icon="tune">tune</span>
+              Sensor &amp; Macro Calibration
+            </button>
+</div>
+</div>
+</div>
+<!-- Quick Telemetry HUD / Diagnostics Strip -->
+<div class="p-3 rounded-lg bg-surface-container/50 border border-outline-variant/30 flex flex-wrap items-center justify-between gap-4 mt-auto">
+<div class="flex items-center gap-4 text-xs font-mono">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="text-on-surface-variant">ENGINE BUFFER:</span>
+<span class="text-primary-container font-bold">128 KB RING BUFFER OK</span>
+</div>
+<div class="hidden md:flex items-center gap-2">
+<span class="text-on-surface-variant">DIRECTINPUT HOOK:</span>
+<span class="text-on-surface">KERNEL-LEVEL ACTIVE (v2.4.11)</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-xs">
+<span class="text-on-surface-variant font-mono">SYSTEM REVENUE LATENCY:</span>
+<span class="font-label-md text-label-md text-tertiary-container font-bold px-2 py-0.5 rounded bg-tertiary-container/10 border border-tertiary-container/30">
+            0.14 ms (SUB-MILLI)
+          </span>
+</div>
+</div>
+</main>
+</div>
+<!-- ========================================================================= -->
+<!-- 4. BOTTOM DOCK / FOOTER BAR (Profile Presets & Hardware Thermals)          -->
+<!-- ========================================================================= -->
+<footer class="h-14 bg-surface-container-lowest border-t border-outline-variant/30 flex items-center justify-between px-4 z-50 select-none shrink-0">
+<!-- Profile presets selector strip -->
+<div class="flex items-center gap-2 overflow-x-auto py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold mr-1 hidden sm:inline">PROFILES:</span>
+<!-- Profile 1: Gaming / FPS (Active) -->
+<button class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container-high border border-primary-container shadow-[0_0_12px_rgba(0,240,255,0.3)] text-primary-container transition-all active:scale-95">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<div class="text-left leading-tight">
+<div class="font-label-md text-label-md font-bold">Gaming / FPS</div>
+<div class="text-[9px] text-on-surface-variant font-mono hidden md:block">Apex Legends // CS2</div>
+</div>
+</button>
+<!-- Profile 2: Productivity & Code (Inactive) -->
+<button class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-outline-variant/30 hover:border-outline hover:bg-surface-container-high text-on-surface-variant transition-all active:scale-95">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<div class="text-left leading-tight">
+<div class="font-label-md text-label-md font-medium text-on-surface">Productivity &amp; Code</div>
+<div class="text-[9px] text-outline font-mono hidden md:block">VS Code // Figma</div>
+</div>
+</button>
+<!-- Profile 3: Default / Media (Inactive) -->
+<button class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-outline-variant/30 hover:border-outline hover:bg-surface-container-high text-on-surface-variant transition-all active:scale-95">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<div class="text-left leading-tight">
+<div class="font-label-md text-label-md font-medium text-on-surface">Default / Media</div>
+<div class="text-[9px] text-outline font-mono hidden md:block">Stealth Silent</div>
+</div>
+</button>
+<!-- New Custom Profile (+) -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded border border-dashed border-outline-variant hover:border-primary-container hover:text-primary-container text-on-surface-variant transition-all text-xs active:scale-95">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+<span class="font-label-sm text-label-sm">+ New Profile</span>
+</button>
+</div>
+<!-- Right Side Tools & Hardware Thermals -->
+<div class="flex items-center gap-4">
+<!-- CPU & GPU Thermals Telemetry Widget -->
+<div class="hidden lg:flex items-center gap-3 bg-surface-container px-3 py-1 rounded border border-outline-variant/30 font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[14px]" data-icon="memory">memory</span>
+<span class="text-on-surface-variant">CPU:</span>
+<span class="text-tertiary-container font-mono font-semibold">54°C</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant/40"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[14px]" data-icon="videogame_asset">videogame_asset</span>
+<span class="text-on-surface-variant">GPU:</span>
+<span class="text-primary-container font-mono font-semibold">61°C</span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="flex items-center gap-2">
+<button class="p-1.5 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" title="Quick Cloud Save">
+<span class="material-symbols-outlined text-[18px]" data-icon="cloud_upload">cloud_upload</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" title="Lighting Studio Link">
+<span class="material-symbols-outlined text-[18px]" data-icon="palette">palette</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

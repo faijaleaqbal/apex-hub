@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Apex Hub - Device Dashboard</title>
+<!-- Google Fonts: Geist & Space Grotesk -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#bacac4",
+            "secondary-container": "#464954",
+            "on-error-container": "#ffdad6",
+            "tertiary": "#ffcca5",
+            "outline": "#85948f",
+            "on-secondary-container": "#b6b8c5",
+            "on-primary-fixed": "#00201a",
+            "secondary-fixed-dim": "#c4c6d3",
+            "on-surface": "#e3e2e6",
+            "tertiary-container": "#ffa657",
+            "surface-container-high": "#292a2d",
+            "surface-container-highest": "#343538",
+            "on-secondary-fixed": "#181b25",
+            "secondary-fixed": "#e0e2ef",
+            "on-primary": "#00382e",
+            "inverse-primary": "#006b5b",
+            "surface": "#121316",
+            "inverse-on-surface": "#2f3034",
+            "surface-container": "#1f1f23",
+            "surface-dim": "#121316",
+            "error-container": "#93000a",
+            "on-primary-fixed-variant": "#005144",
+            "on-tertiary": "#4d2700",
+            "background": "#121316",
+            "tertiary-fixed-dim": "#ffb77c",
+            "on-secondary": "#2d303a",
+            "primary-fixed-dim": "#2adec0",
+            "error": "#ffb4ab",
+            "on-tertiary-fixed": "#2e1500",
+            "inverse-surface": "#e3e2e6",
+            "outline-variant": "#3b4a45",
+            "primary-container": "#00d2b4",
+            "on-tertiary-container": "#723c00",
+            "on-secondary-fixed-variant": "#444651",
+            "on-primary-container": "#005547",
+            "primary": "#46efcf",
+            "secondary": "#c4c6d3",
+            "on-tertiary-fixed-variant": "#6d3900",
+            "surface-container-lowest": "#0d0e11",
+            "on-background": "#e3e2e6",
+            "surface-tint": "#2adec0",
+            "surface-container-low": "#1b1b1f",
+            "on-error": "#690005",
+            "surface-bright": "#38393c",
+            "surface-variant": "#343538",
+            "tertiary-fixed": "#ffdcc2",
+            "primary-fixed": "#57fbdb"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-lg": "1.25rem",
+            "gutter-compact": "0.5rem",
+            "margin": "1.5rem",
+            "margin-window": "0.75rem",
+            "space-md": "0.75rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "space-xl": "2rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Geist"],
+            "label-sm": ["Space Grotesk"],
+            "headline-xl": ["Geist"],
+            "telemetry-num": ["Space Grotesk"],
+            "body-md": ["Geist"],
+            "label-md": ["Space Grotesk"],
+            "headline-sm": ["Geist"],
+            "body-sm": ["Geist"],
+            "headline-lg": ["Geist"]
+          },
+          "fontSize": {
+            "body-lg": ["1rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-xl": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "telemetry-num": ["1.25rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "body-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom styling for micro-machined sliders and scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121316;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272a34;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b4a45;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: #272a34;
+      border-radius: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 8px;
+      border-radius: 2px;
+      background: #e3e2e6;
+      border: 1px solid #121316;
+      cursor: pointer;
+      margin-top: -6px;
+      box-shadow: 0 0 0 1px #3b4a45;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #46efcf;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between">
+<!-- 1. Top Window Bar (Shared Component: TopNavBar execution) -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center h-10 px-gutter-compact w-full select-none shrink-0 z-50">
+<!-- Left Zone: App Branding & Profiles -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs pl-space-xs">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span>
+<span class="text-label-md font-label-md font-semibold text-on-surface tracking-wider">Apex Hub</span>
+</div>
+<div class="h-4 w-px bg-outline-variant"></div>
+<!-- Navigation link: Default (Competitive) dropdown profile -->
+<div class="flex items-center gap-space-xs text-on-surface font-label-sm bg-surface-container px-space-sm py-0.5 rounded border border-outline-variant cursor-pointer hover:bg-surface-container-high transition-colors duration-150">
+<span class="text-on-surface-variant font-label-sm">Profile:</span>
+<span class="font-medium text-primary">Default (Competitive)</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Device Global Status Pill -->
+<div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-low border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-[10px]">All Devices Online</span>
+</div>
+</div>
+<!-- Right Zone: SYMETRIC LINK & Windows Window Controls -->
+<div class="flex items-center gap-space-md">
+<div class="hidden md:flex items-center gap-space-xs text-label-sm font-label-sm text-outline px-space-sm py-0.5 bg-surface-container-lowest rounded border border-outline-variant/60">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="sensors">sensors</span>
+<span>SYMETRIC LINK 1000Hz</span>
+</div>
+<!-- Window Action Buttons -->
+<div class="flex items-center h-10 -mr-gutter-compact">
+<button class="w-11 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150" title="Minimize">
+<span class="material-symbols-outlined text-[16px]" data-icon="remove">remove</span>
+</button>
+<button class="w-11 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150" title="Maximize">
+<span class="material-symbols-outlined text-[14px]" data-icon="crop_square">crop_square</span>
+</button>
+<button class="w-11 h-10 flex items-center justify-center text-on-surface-variant hover:bg-[#E81123] hover:text-white transition-colors duration-150" title="Close">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Middle Core Layout: SideNavBar + Workspace Canvas -->
+<div class="flex-1 flex overflow-hidden w-full relative">
+<!-- 2. SideNavBar (Shared Component: SideNavBar execution) -->
+<aside class="bg-surface-container-low flex flex-col justify-between h-full p-margin-window w-64 border-r border-outline-variant select-none shrink-0">
+<!-- Sidebar Header & Nav Cluster -->
+<div class="flex flex-col gap-space-lg">
+<!-- Brand Unit -->
+<div class="flex items-center justify-between px-space-sm pt-space-xs">
+<div class="flex flex-col">
+<span class="text-label-md font-label-md font-bold tracking-widest text-on-surface">APEX HUB</span>
+<span class="text-body-sm font-body-sm text-outline text-[11px]">v2.4.19 Enterprise</span>
+</div>
+<span class="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer text-[18px] transition-colors" data-icon="bolt">bolt</span>
+</div>
+<!-- Rail Navigation Links -->
+<nav class="flex flex-col gap-1">
+<!-- Tab 1: Dashboard (Active) -->
+<button class="flex items-center gap-space-sm text-primary bg-surface-container border-l-2 border-primary px-space-md py-space-sm rounded-r-lg font-label-md font-medium text-left w-full transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="grid_view">grid_view</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</button>
+<!-- Tab 2: Mouse Tuning -->
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-md py-space-sm rounded-lg font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="mouse">mouse</span>
+<span class="text-label-md font-label-md">Mouse Tuning</span>
+</button>
+<!-- Tab 3: Key Remap -->
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-md py-space-sm rounded-lg font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="keyboard">keyboard</span>
+<span class="text-label-md font-label-md">Key Remap</span>
+</button>
+<!-- Tab 4: Acoustics -->
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-md py-space-sm rounded-lg font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="graphic_eq">graphic_eq</span>
+<span class="text-label-md font-label-md">Acoustics</span>
+</button>
+<!-- Tab 5: Ambient Glow -->
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-md py-space-sm rounded-lg font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="flare">flare</span>
+<span class="text-label-md font-label-md">Ambient Glow</span>
+</button>
+</nav>
+</div>
+<!-- Sidebar Footer Module -->
+<div class="flex flex-col gap-space-sm pt-space-md border-t border-outline-variant/60">
+<!-- CTA Firmware Check -->
+<button class="w-full bg-surface-container hover:bg-surface-container-high border border-outline-variant px-space-sm py-2 rounded flex items-center justify-between text-on-surface transition-colors duration-150">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-[10px]">Check Firmware</span>
+</div>
+<span class="material-symbols-outlined text-[14px] text-outline" data-icon="refresh">refresh</span>
+</button>
+<!-- Secondary Diagnostics & Settings tabs -->
+<div class="flex flex-col gap-0.5">
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-sm py-1.5 rounded font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left text-[12px]">
+<span class="material-symbols-outlined text-[16px]" data-icon="tune">tune</span>
+<span>Device Diagnostics</span>
+</button>
+<button class="flex items-center gap-space-sm text-on-surface-variant px-space-sm py-1.5 rounded font-label-md hover:text-on-surface hover:bg-surface-container transition-colors text-left text-[12px]">
+<span class="material-symbols-outlined text-[16px]" data-icon="settings">settings</span>
+<span>Settings</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- 3. Workspace Canvas: Main Dashboard Area -->
+<main class="flex-1 bg-surface overflow-y-auto p-margin-window lg:p-gutter flex flex-col gap-space-md">
+<!-- Content Canvas Header -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-container-low p-space-md rounded border border-outline-variant">
+<div class="flex items-center gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<h1 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Connected Peripherals</h1>
+<span class="px-1.5 py-0.5 rounded text-label-sm font-label-sm bg-primary/10 text-primary border border-primary/20">2 ACTIVE</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Engineered real-time telemetry link &amp; low-latency protocol running at 4000Hz polling.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<!-- Global Power Quick Telemetry -->
+<div class="flex items-center gap-space-md bg-surface-container px-space-md py-1.5 rounded border border-outline-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary" data-icon="power">power</span>
+<span class="text-label-sm font-label-sm text-outline">RF LINK:</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">OPTIMAL</span>
+</div>
+<div class="h-3 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="text-label-sm font-label-sm text-outline">TOTAL POWER:</span>
+<span class="text-label-sm font-label-sm text-primary font-semibold">85% AVG</span>
+</div>
+</div>
+<!-- Sync Profiles Button -->
+<button class="bg-primary hover:bg-primary-container text-surface px-space-md py-1.5 rounded font-label-sm font-semibold flex items-center gap-space-xs transition-colors duration-150">
+<span class="material-symbols-outlined text-[15px]" data-icon="sync">sync</span>
+<span>Sync Profiles</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid: The Two Hardware Cards -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-space-md">
+<!-- CARD 1: Karnage Visage Tri-Mode Keyboard -->
+<section class="bg-surface-container-low border border-outline-variant rounded-lg p-space-md flex flex-col justify-between gap-space-md">
+<!-- Card Header & Badges -->
+<div class="flex items-start justify-between border-b border-outline-variant/70 pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="keyboard">keyboard</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Karnage Visage Tri-Mode</h2>
+<span class="text-[10px] font-label-sm uppercase px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant border border-outline-variant">WLKM-054</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>2.4GHz Slipstream Wireless (0.5ms)</span>
+</div>
+</div>
+</div>
+<!-- Battery Gauge -->
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="battery_horiz_075">battery_horiz_075</span>
+<span class="text-telemetry-num font-telemetry-num text-on-surface text-[14px]">92%</span>
+</div>
+<!-- Segmented battery bar -->
+<div class="flex gap-0.5 w-14 h-1.5 bg-surface-container-lowest p-[1px] rounded-sm border border-outline-variant">
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-primary/40 rounded-[1px]"></div>
+</div>
+</div>
+</div>
+<!-- Rapid Trigger Actuation Height Module -->
+<div class="bg-surface-container rounded p-space-md border border-outline-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="text-label-sm font-label-sm uppercase text-outline">WASD Magnetic Switch Actuation</span>
+<span class="px-1.5 py-0.2 rounded text-[9px] font-label-sm bg-primary/10 text-primary uppercase">Rapid Trigger</span>
+</div>
+<span class="text-telemetry-num font-telemetry-num text-primary" id="actuation-display">0.8 mm</span>
+</div>
+<!-- Precision Scale Slider -->
+<div class="flex flex-col gap-1 pt-1">
+<input class="w-full cursor-pointer accent-primary" id="actuation-slider" max="3.8" min="0.2" oninput="document.getElementById('actuation-display').innerText = parseFloat(this.value).toFixed(1) + ' mm'" step="0.1" type="range" value="0.8"/>
+<div class="flex justify-between text-[10px] font-label-sm text-outline px-0.5">
+<span>0.2 mm (Sensitive)</span>
+<span>2.0 mm (Standard)</span>
+<span>3.8 mm (Deep)</span>
+</div>
+</div>
+<!-- Visual Key Cluster Representation -->
+<div class="grid grid-cols-4 gap-1.5 pt-1">
+<div class="bg-surface-container-high border border-outline-variant p-2 rounded text-center flex flex-col items-center">
+<span class="text-label-sm font-label-sm text-outline text-[10px]">W</span>
+<span class="text-body-sm font-body-sm text-primary text-[11px] font-semibold">0.8mm</span>
+</div>
+<div class="bg-surface-container-high border border-outline-variant p-2 rounded text-center flex flex-col items-center">
+<span class="text-label-sm font-label-sm text-outline text-[10px]">A</span>
+<span class="text-body-sm font-body-sm text-primary text-[11px] font-semibold">0.8mm</span>
+</div>
+<div class="bg-surface-container-high border border-outline-variant p-2 rounded text-center flex flex-col items-center">
+<span class="text-label-sm font-label-sm text-outline text-[10px]">S</span>
+<span class="text-body-sm font-body-sm text-primary text-[11px] font-semibold">0.8mm</span>
+</div>
+<div class="bg-surface-container-high border border-outline-variant p-2 rounded text-center flex flex-col items-center">
+<span class="text-label-sm font-label-sm text-outline text-[10px]">D</span>
+<span class="text-body-sm font-body-sm text-primary text-[11px] font-semibold">0.8mm</span>
+</div>
+</div>
+</div>
+<!-- Shortcuts, Polling Rate & Hardware Switch Controls -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<!-- Polling Rate Segmented Pill -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex flex-col justify-between">
+<span class="text-label-sm font-label-sm uppercase text-outline mb-1.5">Hardware Polling Rate</span>
+<div class="grid grid-cols-3 gap-1 bg-surface-container-lowest p-1 rounded border border-outline-variant">
+<button class="py-1 text-label-sm font-label-sm text-outline hover:text-on-surface rounded transition-colors text-center">1000Hz</button>
+<button class="py-1 text-label-sm font-label-sm text-on-surface bg-surface-container-high border border-outline-variant/60 rounded font-semibold text-center text-primary">4000Hz</button>
+<button class="py-1 text-label-sm font-label-sm text-outline hover:text-on-surface rounded transition-colors text-center">8000Hz</button>
+</div>
+</div>
+<!-- Profile Memory Slot Selector -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex flex-col justify-between">
+<span class="text-label-sm font-label-sm uppercase text-outline mb-1.5">On-Board Memory Slots</span>
+<div class="flex items-center gap-1.5">
+<button class="flex-1 py-1 px-2 rounded bg-primary/10 border border-primary text-primary text-label-sm font-label-sm font-semibold flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>SLOT 1</span>
+</button>
+<button class="flex-1 py-1 px-2 rounded bg-surface-container-lowest border border-outline-variant text-outline hover:text-on-surface text-label-sm font-label-sm">
+                  SLOT 2
+                </button>
+<button class="flex-1 py-1 px-2 rounded bg-surface-container-lowest border border-outline-variant text-outline hover:text-on-surface text-label-sm font-label-sm">
+                  SLOT 3
+                </button>
+</div>
+</div>
+<!-- Toggle Row: Win Lock -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">Windows Key Lock</span>
+<span class="text-[11px] text-outline">Disable Meta/Win during session</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<!-- Toggle Row: DKS Dynamic Keystroke -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">DKS Multipoint Layer</span>
+<span class="text-[11px] text-outline">Bind 4 actions to 1 travel key</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+</div>
+<!-- Bottom Micro Footer for Card -->
+<div class="pt-space-xs flex items-center justify-between text-[11px] text-outline">
+<span>Firmware: v1.12.00 (Stable)</span>
+<button class="text-primary hover:underline font-label-sm">Calibrate Travel Curve →</button>
+</div>
+</section>
+<!-- CARD 2: Arctic Fox 2.4G Mouse -->
+<section class="bg-surface-container-low border border-outline-variant rounded-lg p-space-md flex flex-col justify-between gap-space-md">
+<!-- Card Header & Badges -->
+<div class="flex items-start justify-between border-b border-outline-variant/70 pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="mouse">mouse</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Arctic Fox 2.4G Mouse</h2>
+<span class="text-[10px] font-label-sm uppercase px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant border border-outline-variant">PixArt PAW3395</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>26,000 DPI • Motion Sync Enabled</span>
+</div>
+</div>
+</div>
+<!-- Battery Gauge -->
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="bolt">bolt</span>
+<span class="text-telemetry-num font-telemetry-num text-on-surface text-[14px]">78%</span>
+</div>
+<!-- Segmented battery bar -->
+<div class="flex gap-0.5 w-14 h-1.5 bg-surface-container-lowest p-[1px] rounded-sm border border-outline-variant">
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-primary rounded-[1px]"></div>
+<div class="flex-1 bg-surface-container-high rounded-[1px]"></div>
+</div>
+</div>
+</div>
+<!-- DPI Step Multi-Selector -->
+<div class="bg-surface-container rounded p-space-md border border-outline-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm uppercase text-outline">Active Optical DPI Profile</span>
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-outline font-label-sm">STAGE 3 / 5</span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary border border-surface"></span>
+</div>
+</div>
+<!-- Segmented DPI Buttons -->
+<div class="grid grid-cols-5 gap-1.5">
+<button class="py-2 px-1 bg-surface-container-lowest border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors">
+<span class="text-[10px] text-outline font-label-sm">Stage 1</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">400</span>
+</button>
+<button class="py-2 px-1 bg-surface-container-lowest border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors">
+<span class="text-[10px] text-outline font-label-sm">Stage 2</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">800</span>
+</button>
+<button class="py-2 px-1 bg-surface-container-high border-2 border-primary rounded flex flex-col items-center relative">
+<span class="text-[10px] text-primary font-label-sm font-bold">Active</span>
+<span class="text-label-sm font-label-sm text-primary font-bold">1600</span>
+</button>
+<button class="py-2 px-1 bg-surface-container-lowest border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors">
+<span class="text-[10px] text-outline font-label-sm">Stage 4</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">3200</span>
+</button>
+<button class="py-2 px-1 bg-surface-container-lowest border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors">
+<span class="text-[10px] text-outline font-label-sm">Stage 5</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">6400</span>
+</button>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-outline pt-1">
+<span>X/Y Independent Tuning: Disabled</span>
+<button class="text-primary hover:underline text-[11px] font-label-sm">Add DPI Step</button>
+</div>
+</div>
+<!-- Precision Sensor & Hardware Clutch Controls -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<!-- Sniper Clutch Setting -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">Sniper Aim Clutch</span>
+<span class="text-[11px] text-outline">Lowers to 400 DPI while held</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<!-- Motion Sync Toggle -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">Motion Sync Algorithm</span>
+<span class="text-[11px] text-outline">Zero frame delay smoothing</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+</label>
+</div>
+<!-- Lift-Off Distance (LOD) Selector -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">Lift-Off Distance (LOD)</span>
+<span class="text-[11px] text-outline">Sensor cutoff altitude</span>
+</div>
+<div class="flex bg-surface-container-lowest p-0.5 rounded border border-outline-variant">
+<button class="px-2 py-0.5 text-[11px] font-label-sm text-primary bg-surface-container-high rounded font-semibold">1.0mm</button>
+<button class="px-2 py-0.5 text-[11px] font-label-sm text-outline hover:text-on-surface transition-colors">2.0mm</button>
+</div>
+</div>
+<!-- Hardware Auto-Clicker F6 Panel -->
+<div class="bg-surface-container p-space-sm rounded border border-outline-variant flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block">F6 Auto-Clicker</span>
+<span class="text-[10px] text-outline">Microswitch burst rate</span>
+</div>
+<span class="text-telemetry-num font-telemetry-num text-primary text-[14px]" id="cps-display">18 CPS</span>
+</div>
+<input class="w-full cursor-pointer accent-primary" id="cps-slider" max="50" min="1" oninput="document.getElementById('cps-display').innerText = this.value + ' CPS'" type="range" value="18"/>
+</div>
+</div>
+<!-- Bottom Micro Footer for Card -->
+<div class="pt-space-xs flex items-center justify-between text-[11px] text-outline">
+<span>Surface Calibration: Cordura Pad Preset</span>
+<button class="text-primary hover:underline font-label-sm">Sensor Diagnostics →</button>
+</div>
+</section>
+</div>
+<!-- Quick Telemetry Diagnostic Strip (Mac OS / G-Hub inspired metrics) -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-space-md bg-surface-container-low border border-outline-variant rounded-lg p-space-sm">
+<div class="flex items-center gap-space-sm px-space-sm py-1 border-r border-outline-variant/60">
+<span class="material-symbols-outlined text-outline text-[20px]" data-icon="memory">memory</span>
+<div>
+<span class="text-[10px] uppercase font-label-sm text-outline block">Active MCU Load</span>
+<span class="text-telemetry-num font-telemetry-num text-on-surface text-[14px]">3.2%</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-1 border-r border-outline-variant/60">
+<span class="material-symbols-outlined text-outline text-[20px]" data-icon="network_check">network_check</span>
+<div>
+<span class="text-[10px] uppercase font-label-sm text-outline block">RF Packet Loss</span>
+<span class="text-telemetry-num font-telemetry-num text-primary text-[14px]">0.00%</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-1 border-r border-outline-variant/60">
+<span class="material-symbols-outlined text-outline text-[20px]" data-icon="timer">timer</span>
+<div>
+<span class="text-[10px] uppercase font-label-sm text-outline block">Click De-bounce</span>
+<span class="text-telemetry-num font-telemetry-num text-on-surface text-[14px]">0.5 ms</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-1">
+<span class="material-symbols-outlined text-outline text-[20px]" data-icon="storage">storage</span>
+<div>
+<span class="text-[10px] uppercase font-label-sm text-outline block">EEPROM Cycles</span>
+<span class="text-telemetry-num font-telemetry-num text-on-surface text-[14px]">24 / 100k</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- 4. Bottom Telemetry Status Bar (Shared Component: Footer execution) -->
+<footer class="bg-surface-container-lowest text-on-surface-variant font-label-sm fixed bottom-0 left-0 w-full z-40 flex justify-between items-center h-6 px-gutter border-t border-outline-variant select-none">
+<!-- Real-time metrics string -->
+<div class="flex items-center gap-space-md text-[11px]">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-primary font-medium">Profile Sync: Real-Time Active</span>
+</div>
+<span class="text-outline/40">|</span>
+<span>RF Latency: <strong class="text-on-surface font-telemetry-num">0.24ms</strong></span>
+<span class="text-outline/40">|</span>
+<span>Polling: <strong class="text-on-surface font-telemetry-num">4000Hz Ultra</strong></span>
+</div>
+<!-- Right Side Status Links -->
+<div class="hidden sm:flex items-center gap-space-md text-[11px]">
+<span class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="check_circle">check_circle</span>
+<span>Low-Latency Mode: Enabled</span>
+</span>
+<span class="text-outline/40">|</span>
+<span class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="cloud_done">cloud_done</span>
+<span>On-Board Memory: Synced</span>
+</span>
+</div>
+</footer>
+</body></html>

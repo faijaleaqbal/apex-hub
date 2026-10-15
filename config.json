@@ -1,0 +1,55 @@
+{
+    "profile": "Default",
+    "mouse": {
+        "speed": 10,
+        "acceleration": true,
+        "swap_buttons": false,
+        "sniper_speed": 3,
+        "sniper_hotkey": "F7",
+        "dpi_stage": 1600,
+        "autoclicker": {
+            "cps": 12,
+            "button": "left",
+            "type": "single",
+            "hotkey": "F6"
+        }
+    },
+    "keyboard": {
+        "win_lock": false,
+        "turbo": {
+            "enabled": false,
+            "key": "space",
+            "rate": 20
+        },
+        "remaps": {
+            "f8": {
+                "type": "launch",
+                "value": "steam"
+            },
+            "f9": {
+                "type": "media",
+                "value": "mute"
+            },
+            "f10": {
+                "type": "media",
+                "value": "vol_down"
+            },
+            "f11": {
+                "type": "media",
+                "value": "vol_up"
+            },
+            "f12": {
+                "type": "media",
+                "value": "play_pause"
+            }
+        }
+    },
+    "sound": {
+        "enabled": false,
+        "current": "thock"
+    },
+    "glow": {
+        "enabled": false,
+        "color": "#00F0FF"
+    }
+}

@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Apex Hub - Peripheral Control Suite</title>
+  <!-- Google Fonts: Geist & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-lowest": "#0d0e11",
+            "surface-container-low": "#1b1b1f",
+            "surface-container": "#1f1f23",
+            "surface-container-high": "#292a2d",
+            "surface-container-highest": "#343538",
+            "surface": "#121316",
+            "background": "#121316",
+            "primary": "#00d2b4",
+            "primary-container": "#46efcf",
+            "outline": "#85948f",
+            "outline-variant": "#272a34",
+            "on-surface": "#e3e2e6",
+            "on-surface-variant": "#bacac4"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Space Grotesk", "monospace"],
+            headline: ["Geist", "sans-serif"],
+            telemetry: ["Space Grotesk", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Clean micro-machined scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121316;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272a34;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b4a45;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: #272a34;
+      border-radius: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 10px;
+      border-radius: 2px;
+      background: #00d2b4;
+      border: 1px solid #121316;
+      cursor: pointer;
+      margin-top: -6px;
+      box-shadow: 0 0 4px rgba(0, 210, 180, 0.4);
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #46efcf;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between font-sans">
+
+  <!-- 1. TOP WINDOW BAR (Branding + Profile + RF Status) -->
+  <header class="bg-surface border-b border-outline-variant flex justify-between items-center h-10 px-4 w-full select-none shrink-0 z-50">
+    <!-- Left Zone: App Branding & Profiles -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span>
+        <span class="font-mono text-[13px] font-semibold text-on-surface tracking-wider uppercase">Apex Hub</span>
+      </div>
+      <div class="h-4 w-px bg-outline-variant"></div>
+      
+      <!-- Profile Selector -->
+      <div class="relative flex items-center">
+        <select id="profile-select" onchange="selectProfile(this.value)" class="text-on-surface font-mono text-[11px] bg-surface-container px-2.5 py-1 rounded border border-outline-variant cursor-pointer hover:bg-surface-container-high focus:outline-none focus:border-primary transition-colors">
+          <option value="Gaming / FPS">Profile: Competitive (FPS)</option>
+          <option value="Productivity / Office">Profile: Productivity (Office)</option>
+          <option value="Default">Profile: Default Balanced</option>
+        </select>
+      </div>
+
+      <!-- Device Global Status Pill -->
+      <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-low border border-outline-variant">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-mono text-on-surface-variant uppercase tracking-wider text-[10px]">All Devices Active</span>
+      </div>
+    </div>
+
+    <!-- Right Zone: Lock States & RF Status -->
+    <div class="flex items-center gap-3">
+      <!-- Hardware Lock Indicators -->
+      <div class="flex items-center gap-1 font-mono text-[10px]">
+        <span id="badge-caps" class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant text-outline">CAPS</span>
+        <span id="badge-num" class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant text-outline">NUM</span>
+        <span id="badge-winlock" class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant text-outline">WINLOCK</span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 font-mono text-[11px] text-outline px-2.5 py-0.5 bg-surface-container-lowest rounded border border-outline-variant">
+        <span class="material-symbols-outlined text-[14px] text-primary">sensors</span>
+        <span>2.4GHz RF Link 1000Hz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. MIDDLE CORE LAYOUT: SideNav + Workspace Canvas -->
+  <div class="flex-1 flex overflow-hidden w-full relative">
+    
+    <!-- SideNavBar -->
+    <aside class="bg-surface-container-low flex flex-col justify-between h-full p-3 w-60 border-r border-outline-variant select-none shrink-0">
+      <div class="flex flex-col gap-4">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between px-2 pt-1">
+          <div class="flex flex-col">
+            <span class="font-mono font-bold tracking-widest text-[12px] text-on-surface">PERIPHERAL SUITE</span>
+            <span class="font-sans text-[11px] text-outline">v2.5.0 Enterprise</span>
+          </div>
+          <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+        </div>
+
+        <!-- Rail Navigation Tabs -->
+        <nav class="flex flex-col gap-1" id="nav-tabs">
+          <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="nav-btn flex items-center gap-2.5 text-primary bg-surface-container border-l-2 border-primary px-3 py-2 rounded-r font-mono text-[12px] font-medium text-left w-full transition-all">
+            <span class="material-symbols-outlined text-[18px]">grid_view</span>
+            <span>Dashboard</span>
+          </button>
+          <button onclick="switchTab('mouse')" id="btn-tab-mouse" class="nav-btn flex items-center gap-2.5 text-on-surface-variant px-3 py-2 rounded font-mono text-[12px] hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+            <span class="material-symbols-outlined text-[18px]">mouse</span>
+            <span>Mouse & DPI Tuning</span>
+          </button>
+          <button onclick="switchTab('keyboard')" id="btn-tab-keyboard" class="nav-btn flex items-center gap-2.5 text-on-surface-variant px-3 py-2 rounded font-mono text-[12px] hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+            <span class="material-symbols-outlined text-[18px]">keyboard</span>
+            <span>Keyboard Engine</span>
+          </button>
+          <button onclick="switchTab('sound')" id="btn-tab-sound" class="nav-btn flex items-center gap-2.5 text-on-surface-variant px-3 py-2 rounded font-mono text-[12px] hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+            <span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+            <span>Acoustics</span>
+          </button>
+          <button onclick="switchTab('glow')" id="btn-tab-glow" class="nav-btn flex items-center gap-2.5 text-on-surface-variant px-3 py-2 rounded font-mono text-[12px] hover:text-on-surface hover:bg-surface-container transition-colors text-left w-full">
+            <span class="material-symbols-outlined text-[18px]">flare</span>
+            <span>Ambient Glow</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer Module -->
+      <div class="flex flex-col gap-2 pt-3 border-t border-outline-variant">
+        <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex flex-col gap-1">
+          <div class="flex items-center justify-between font-mono text-[10px] text-outline">
+            <span>ACTIVE PROFILE</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          </div>
+          <div id="side-profile-name" class="font-sans font-semibold text-primary text-[12px]">Competitive (FPS)</div>
+          <div class="font-mono text-[10px] text-outline flex items-center justify-between">
+            <span>Background State</span>
+            <span class="text-primary font-semibold">Active & Saved</span>
+          </div>
+        </div>
+
+        <button onclick="pycall('exit_app')" class="w-full py-1.5 px-2 rounded bg-surface-container-lowest border border-outline-variant hover:border-red-500/60 hover:text-red-400 text-outline font-mono text-[10px] flex items-center justify-center gap-1.5 transition-colors" title="Completely close and stop background services">
+          <span class="material-symbols-outlined text-[14px]">power_settings_new</span>
+          <span>Exit Suite Completely</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- 3. MAIN WORKSPACE CANVAS -->
+    <main class="flex-1 bg-surface overflow-y-auto p-5 lg:p-6 flex flex-col gap-4">
+
+      <!-- ==================== TAB 1: DASHBOARD ==================== -->
+      <div id="view-dashboard" class="tab-view flex flex-col gap-4">
+        
+        <!-- Dashboard Header -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-surface-container-low p-3.5 rounded border border-outline-variant">
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-[16px] font-headline font-semibold text-on-surface">Connected Peripherals</h1>
+              <span class="px-1.5 py-0.5 rounded font-mono text-[10px] bg-primary/10 text-primary border border-primary/20">2 HARDWARE DEVICES DETECTED</span>
+            </div>
+            <p class="text-[12px] font-sans text-outline mt-0.5">MSI B550M GAMING PLUS System • 2.4GHz RF Slipstream Protocol</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 bg-surface-container px-3 py-1.5 rounded border border-outline-variant font-mono text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px] text-primary">wifi_channel</span>
+                <span class="text-outline">LINK:</span>
+                <span class="text-on-surface font-semibold">2.4G WIRELESS</span>
+              </div>
+              <div class="h-3 w-px bg-outline-variant"></div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-outline">LATENCY:</span>
+                <span class="text-primary font-semibold">0.24ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Main Peripheral Cards -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          
+          <!-- CARD 1: KARNAGE KEYBOARD -->
+          <section class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3 hover:border-outline transition-colors">
+            <div>
+              <!-- Header -->
+              <div class="flex items-start justify-between border-b border-outline-variant pb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+                    <span class="material-symbols-outlined text-primary text-[20px]">keyboard</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h2 class="text-[15px] font-headline font-semibold text-on-surface">Karnage Visage Tri-Mode</h2>
+                      <span class="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant border border-outline-variant">WLKM-054</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] font-sans text-outline">
+                      <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                      <span>84-Key Mecha-Membrane Deck</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Battery Indicator -->
+                <div class="flex flex-col items-end gap-1">
+                  <div class="flex items-center gap-1 font-mono text-[12px] text-on-surface">
+                    <span class="material-symbols-outlined text-[14px] text-primary">battery_full</span>
+                    <span>92%</span>
+                  </div>
+                  <div class="flex gap-0.5 w-12 h-1.5 bg-surface-container-lowest p-[1px] rounded-sm border border-outline-variant">
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-primary/40 rounded-[1px]"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Toggles in Keyboard Card -->
+              <div class="grid grid-cols-2 gap-2 mt-3">
+                <!-- WinLock Toggle -->
+                <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] font-sans font-medium text-on-surface block">Windows Key Lock</span>
+                    <span class="text-[10px] font-mono text-outline">Blocks Start Menu in Games</span>
+                  </div>
+                  <input type="checkbox" id="dash-winlock-chk" onchange="toggleWinLock(this.checked)" class="accent-primary w-4 h-4 cursor-pointer"/>
+                </div>
+
+                <!-- Turbo Key Toggle -->
+                <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] font-sans font-medium text-on-surface block">Turbo Rapid Trigger</span>
+                    <span class="text-[10px] font-mono text-primary" id="dash-turbo-label">Space [20 CPS]</span>
+                  </div>
+                  <input type="checkbox" id="dash-turbo-chk" onchange="toggleTurboMode(this.checked)" class="accent-primary w-4 h-4 cursor-pointer"/>
+                </div>
+              </div>
+
+              <!-- Hardware Lighting Cheat Sheet -->
+              <div class="mt-3 bg-surface-container p-3 rounded border border-outline-variant">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[11px] font-mono uppercase text-outline font-semibold">Onboard Hardware RGB Shortcuts</span>
+                  <span class="text-[10px] font-mono text-primary">MCU Direct Control</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono">
+                  <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant">
+                    <div class="text-[11px] text-primary font-bold">Fn + Enter</div>
+                    <div class="text-[9px] text-outline mt-0.5">15 Effects Cycle</div>
+                  </div>
+                  <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant">
+                    <div class="text-[11px] text-primary font-bold">Fn + \</div>
+                    <div class="text-[9px] text-outline mt-0.5">8 Solid Colors</div>
+                  </div>
+                  <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant">
+                    <div class="text-[11px] text-primary font-bold">Fn + Backspace</div>
+                    <div class="text-[9px] text-outline mt-0.5">Toggle On/Off</div>
+                  </div>
+                  <div class="p-2 rounded bg-surface-container-lowest border border-outline-variant">
+                    <div class="text-[11px] text-primary font-bold">Fn + Arrows</div>
+                    <div class="text-[9px] text-outline mt-0.5">Speed / Brightness</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-outline-variant flex items-center justify-between">
+              <span class="text-[11px] font-mono text-outline">Software Key Remaps & Turbo Engine</span>
+              <button onclick="switchTab('keyboard')" class="text-primary hover:underline font-mono text-[11px] flex items-center gap-1">
+                Configure Keyboard Features →
+              </button>
+            </div>
+          </section>
+
+          <!-- CARD 2: ARCTIC FOX MOUSE -->
+          <section class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3 hover:border-outline transition-colors">
+            <div>
+              <!-- Header -->
+              <div class="flex items-start justify-between border-b border-outline-variant pb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+                    <span class="material-symbols-outlined text-primary text-[20px]">mouse</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h2 class="text-[15px] font-headline font-semibold text-on-surface">Arctic Fox Wireless Mouse</h2>
+                      <span class="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant border border-outline-variant">2.4G Optical</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] font-sans text-outline">
+                      <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                      <span>OnMicro 2.4GHz Low-Latency Sensor</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Battery Indicator -->
+                <div class="flex flex-col items-end gap-1">
+                  <div class="flex items-center gap-1 font-mono text-[12px] text-on-surface">
+                    <span class="material-symbols-outlined text-[14px] text-primary">bolt</span>
+                    <span>78%</span>
+                  </div>
+                  <div class="flex gap-0.5 w-12 h-1.5 bg-surface-container-lowest p-[1px] rounded-sm border border-outline-variant">
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-primary rounded-[1px]"></div>
+                    <div class="flex-1 bg-surface-container-high rounded-[1px]"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick DPI Stage Selector in Dashboard -->
+              <div class="bg-surface-container rounded p-3 border border-outline-variant mt-3 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-mono uppercase text-outline">Active Optical DPI Stage</span>
+                  <span id="dash-edpi-badge" class="font-mono text-[11px] text-primary font-semibold">1600 eDPI</span>
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                  <button onclick="selectDpiStage(800)" class="dpi-btn-stage py-1.5 px-1 bg-surface-container-lowest border border-outline-variant rounded font-mono text-[11px] text-outline hover:text-on-surface transition-colors" data-dpi="800">800</button>
+                  <button onclick="selectDpiStage(1200)" class="dpi-btn-stage py-1.5 px-1 bg-surface-container-lowest border border-outline-variant rounded font-mono text-[11px] text-outline hover:text-on-surface transition-colors" data-dpi="1200">1200</button>
+                  <button onclick="selectDpiStage(1600)" class="dpi-btn-stage py-1.5 px-1 bg-surface-container-high border border-primary text-primary font-bold rounded font-mono text-[11px]" data-dpi="1600">1600</button>
+                  <button onclick="selectDpiStage(2400)" class="dpi-btn-stage py-1.5 px-1 bg-surface-container-lowest border border-outline-variant rounded font-mono text-[11px] text-outline hover:text-on-surface transition-colors" data-dpi="2400">2400</button>
+                  <button onclick="selectDpiStage(3200)" class="dpi-btn-stage py-1.5 px-1 bg-surface-container-lowest border border-outline-variant rounded font-mono text-[11px] text-outline hover:text-on-surface transition-colors" data-dpi="3200">3200</button>
+                </div>
+              </div>
+
+              <!-- Quick Action Modules -->
+              <div class="grid grid-cols-2 gap-2 mt-3">
+                <!-- F6 Auto Clicker -->
+                <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] font-mono text-on-surface">F6 Auto-Clicker</span>
+                    <button onclick="toggleAutoclicker()" id="dash-ac-btn" class="px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant text-[10px] font-mono text-outline hover:text-on-surface">
+                      OFF
+                    </button>
+                  </div>
+                  <span id="dash-ac-cps" class="text-[11px] font-mono text-primary font-semibold">12 CPS Configured</span>
+                </div>
+
+                <!-- F7 Sniper Clutch -->
+                <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] font-mono text-on-surface">F7 Sniper Mode</span>
+                    <button onclick="toggleSniper()" id="dash-sniper-btn" class="px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant text-[10px] font-mono text-outline hover:text-on-surface">
+                      OFF
+                    </button>
+                  </div>
+                  <span id="dash-sniper-label" class="text-[11px] font-mono text-primary font-semibold">3/20 Precision Lock</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-outline-variant flex items-center justify-between">
+              <span class="text-[11px] font-mono text-outline">Hardware DPI Cycle: Dedicated Top Button</span>
+              <button onclick="switchTab('mouse')" class="text-primary hover:underline font-mono text-[11px] flex items-center gap-1">
+                Full DPI & Mouse Settings →
+              </button>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Telemetry Diagnostic Strip -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-surface-container-low border border-outline-variant rounded p-3">
+          <div class="flex items-center gap-3 px-2 border-r border-outline-variant">
+            <span class="material-symbols-outlined text-outline text-[20px]">keyboard</span>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-outline block">Session Keystrokes</span>
+              <span id="dash-telemetry-keys" class="font-mono text-on-surface text-[13px] font-semibold">0</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 px-2 border-r border-outline-variant">
+            <span class="material-symbols-outlined text-outline text-[20px]">speed</span>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-outline block">Live Typing Speed</span>
+              <span id="dash-telemetry-kps" class="font-mono text-primary text-[13px] font-semibold">0 KPS (0 WPM)</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 px-2 border-r border-outline-variant">
+            <span class="material-symbols-outlined text-outline text-[20px]">bolt</span>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-outline block">RF Packet Status</span>
+              <span class="font-mono text-on-surface text-[13px] font-semibold">0.00% Loss</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 px-2">
+            <span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-outline block">WinLock Status</span>
+              <span id="dash-telemetry-winlock" class="font-mono text-outline text-[13px] font-semibold">Unlocked</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ==================== TAB 2: MOUSE & DPI TUNING ==================== -->
+      <div id="view-mouse" class="tab-view hidden flex flex-col gap-4">
+        
+        <div class="bg-surface-container-low p-3.5 rounded border border-outline-variant flex items-center justify-between">
+          <div>
+            <h1 class="text-[16px] font-headline font-semibold text-on-surface">Mouse DPI & Sensitivity Engine</h1>
+            <p class="text-[12px] font-sans text-outline mt-0.5">Custom DPI stages, non-laggy sensitivity scaling, sniper clutch limits, and burst auto-clicker.</p>
+          </div>
+          <div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant font-mono text-[11px]">
+            <span class="text-outline">Effective Calculated DPI:</span>
+            <span id="calc-edpi-badge" class="text-primary font-bold">1600 eDPI</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Optical Hardware DPI Stages -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+              <h2 class="text-[14px] font-headline font-semibold text-on-surface">Optical Sensor DPI Stages</h2>
+              <span class="font-mono text-[11px] text-primary" id="active-dpi-display">STAGE: 1600 DPI</span>
+            </div>
+            
+            <p class="text-[12px] font-sans text-outline">
+              Match your Arctic Fox mouse hardware presets or tune software sensitivity to your preferred DPI.
+            </p>
+
+            <div class="grid grid-cols-5 gap-2 pt-1">
+              <button onclick="selectDpiStage(800)" class="dpi-btn-stage py-2 px-1 bg-surface-container border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors" data-dpi="800">
+                <span class="text-[9px] text-outline font-mono">Stage 1</span>
+                <span class="text-[12px] font-mono font-semibold">800</span>
+              </button>
+              <button onclick="selectDpiStage(1200)" class="dpi-btn-stage py-2 px-1 bg-surface-container border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors" data-dpi="1200">
+                <span class="text-[9px] text-outline font-mono">Stage 2</span>
+                <span class="text-[12px] font-mono font-semibold">1200</span>
+              </button>
+              <button onclick="selectDpiStage(1600)" class="dpi-btn-stage py-2 px-1 bg-surface-container-high border-2 border-primary rounded flex flex-col items-center" data-dpi="1600">
+                <span class="text-[9px] text-primary font-mono font-bold">Active</span>
+                <span class="text-[12px] font-mono font-bold text-primary">1600</span>
+              </button>
+              <button onclick="selectDpiStage(2400)" class="dpi-btn-stage py-2 px-1 bg-surface-container border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors" data-dpi="2400">
+                <span class="text-[9px] text-outline font-mono">Stage 4</span>
+                <span class="text-[12px] font-mono font-semibold">2400</span>
+              </button>
+              <button onclick="selectDpiStage(3200)" class="dpi-btn-stage py-2 px-1 bg-surface-container border border-outline-variant rounded flex flex-col items-center hover:border-outline transition-colors" data-dpi="3200">
+                <span class="text-[9px] text-outline font-mono">Stage 5</span>
+                <span class="text-[12px] font-mono font-semibold">3200</span>
+              </button>
+            </div>
+
+            <!-- Custom DPI Input -->
+            <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex items-center justify-between gap-3 mt-1">
+              <span class="text-[11px] font-mono text-outline">Custom Target DPI:</span>
+              <div class="flex items-center gap-2">
+                <input id="custom-dpi-input" type="number" min="200" max="12000" step="50" value="1600" class="w-24 bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 font-mono text-[12px] text-primary focus:outline-none focus:border-primary text-center"/>
+                <button onclick="applyCustomDpi()" class="px-3 py-1 rounded bg-primary text-surface font-mono text-[11px] font-semibold hover:bg-primary-container transition-colors">Apply</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows Pointer Multiplier (Fine Tuning) -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+                <h2 class="text-[14px] font-headline font-semibold text-on-surface">Fine Sensitivity Multiplier</h2>
+                <span id="mouse-speed-val" class="font-mono text-[13px] text-primary font-bold">10 / 20 (1.0x)</span>
+              </div>
+              
+              <p class="text-[12px] font-sans text-outline mt-2">
+                Non-laggy immediate memory scaling. Dragging updates sensitivity smoothly without broadcast stutter.
+              </p>
+
+              <div class="bg-surface-container p-3 rounded border border-outline-variant flex flex-col gap-2 mt-3">
+                <input id="mouse-speed-slider" type="range" min="1" max="20" value="10" oninput="onSpeedDrag(this.value)" onchange="onSpeedCommit(this.value)" class="w-full cursor-pointer"/>
+                <div class="flex justify-between text-[10px] font-mono text-outline">
+                  <span>1 (Micro 0.03x)</span>
+                  <span>10 (Default 1.0x)</span>
+                  <span>20 (Ultra 3.5x)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Precision Acceleration & Button Swap -->
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface-container border border-outline-variant cursor-pointer hover:border-outline">
+                <span class="font-sans text-[11px] text-on-surface">Precision Acceleration</span>
+                <input type="checkbox" id="chk-acc" onchange="toggleAcceleration(this.checked)" class="accent-primary w-4 h-4 rounded cursor-pointer"/>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface-container border border-outline-variant cursor-pointer hover:border-outline">
+                <span class="font-sans text-[11px] text-on-surface">Swap Left/Right</span>
+                <input type="checkbox" id="chk-swap" onchange="toggleSwap(this.checked)" class="accent-primary w-4 h-4 rounded cursor-pointer"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sniper Precision Clutch (With Configurable Limit) -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+                <div class="flex items-center gap-2">
+                  <h2 class="text-[14px] font-headline font-semibold text-on-surface">Sniper Aim Clutch</h2>
+                  <span class="font-mono text-[11px] text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">HOTKEY: F7</span>
+                </div>
+                <span id="sniper-status-text" class="text-[12px] font-mono text-on-surface font-semibold">STANDBY</span>
+              </div>
+              <p class="text-[12px] font-sans text-outline mt-2 leading-relaxed">
+                Press <strong>F7</strong> anywhere on Windows to drop pointer speed instantly to your configured sniper limit for steady long-range scopes.
+              </p>
+
+              <!-- Configurable Sniper Limit Slider -->
+              <div class="bg-surface-container p-3 rounded border border-outline-variant flex flex-col gap-2 mt-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-[11px] text-outline">Configurable Sniper Sensitivity Limit:</span>
+                  <span id="sniper-limit-display" class="font-mono text-[12px] text-primary font-bold">Speed 3 / 20 (0.12x)</span>
+                </div>
+                <input id="sniper-limit-slider" type="range" min="1" max="10" value="3" oninput="onSniperLimitChange(this.value)" class="w-full cursor-pointer"/>
+                <div class="flex justify-between text-[10px] font-mono text-outline">
+                  <span>1 (Ultra-slow aim)</span>
+                  <span>5 (Moderate)</span>
+                  <span>10 (1:1 standard)</span>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="toggleSniper()" id="sniper-toggle-btn" class="w-full py-2 rounded bg-surface-container-high border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+              Toggle Sniper Mode Now (F7)
+            </button>
+          </div>
+
+          <!-- High-Performance Auto-Clicker -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+                <div class="flex items-center gap-2">
+                  <h2 class="text-[14px] font-headline font-semibold text-on-surface">Auto-Clicker Burst Engine</h2>
+                  <span class="font-mono text-[11px] text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">HOTKEY: F6</span>
+                </div>
+                <span id="ac-status-badge" class="text-[11px] font-mono text-outline">STANDBY</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 mt-3">
+                <!-- CPS Slider -->
+                <div class="col-span-2 bg-surface-container p-3 rounded border border-outline-variant flex flex-col gap-2">
+                  <div class="flex justify-between items-center">
+                    <span class="font-mono text-[11px] text-outline">Clicks Per Second (CPS)</span>
+                    <span id="cps-val" class="font-mono text-[13px] text-primary font-bold">12 CPS</span>
+                  </div>
+                  <input id="cps-slider" type="range" min="1" max="50" value="12" oninput="onCpsChange(this.value)" class="w-full cursor-pointer"/>
+                  <div class="flex justify-between text-[10px] font-mono text-outline">
+                    <span>1 CPS</span>
+                    <span>25 CPS</span>
+                    <span>50 CPS</span>
+                  </div>
+                </div>
+
+                <!-- Button Select -->
+                <div class="bg-surface-container p-3 rounded border border-outline-variant flex flex-col justify-between">
+                  <span class="font-mono text-[11px] text-outline">Trigger Button</span>
+                  <select id="sel-ac-btn" onchange="onAcButtonChange(this.value)" class="bg-surface-container-high text-on-surface font-mono text-[11px] rounded p-1.5 border border-outline-variant focus:outline-none focus:border-primary">
+                    <option value="left">Left Click</option>
+                    <option value="right">Right Click</option>
+                    <option value="middle">Middle Click</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="toggleAutoclicker()" id="ac-main-btn" class="w-full py-2 rounded bg-primary text-surface font-mono text-[12px] font-semibold hover:bg-primary-container transition-colors">
+              ▶ Start Auto-Clicker (F6)
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB 3: KEYBOARD ENGINE ==================== -->
+      <div id="view-keyboard" class="tab-view hidden flex flex-col gap-4">
+        
+        <div class="bg-surface-container-low p-3.5 rounded border border-outline-variant flex items-center justify-between">
+          <div>
+            <h1 class="text-[16px] font-headline font-semibold text-on-surface">Karnage Visage Keyboard Suite</h1>
+            <p class="text-[12px] font-sans text-outline mt-0.5">Gaming WinLock, Turbo Rapid Trigger, 84-Key Deck Visualizer, and Custom Remap Engine.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-[11px] text-outline">Deck Model: <strong class="text-on-surface">WLKM-054</strong></span>
+          </div>
+        </div>
+
+        <!-- Gaming Tools Bar (WinLock & Turbo) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- WinLock Gamemode Card -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3">
+            <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+                <h2 class="text-[14px] font-headline font-semibold text-on-surface">Windows Key Lock (WinLock)</h2>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="chk-winlock-feature" onchange="toggleWinLock(this.checked)" class="sr-only peer"/>
+                <div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+            <p class="text-[12px] font-sans text-outline leading-relaxed">
+              Completely suppresses the Windows Start key at kernel level. Prevents accidental desktop tab-outs during competitive games.
+            </p>
+            <div class="bg-surface-container p-2.5 rounded border border-outline-variant flex items-center justify-between font-mono text-[11px]">
+              <span class="text-outline">WinLock Current State:</span>
+              <span id="winlock-status-label" class="text-outline font-semibold">Disabled (Start Key Active)</span>
+            </div>
+          </div>
+
+          <!-- Turbo Mode (Rapid Trigger Repeat) Card -->
+          <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col justify-between gap-3">
+            <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+                <h2 class="text-[14px] font-headline font-semibold text-on-surface">Turbo Rapid Trigger</h2>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="chk-turbo-feature" onchange="toggleTurboMode(this.checked)" class="sr-only peer"/>
+                <div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-mono text-[10px] text-outline mb-1">Target Key to Spam:</label>
+                <select id="turbo-key-select" onchange="updateTurboSettings()" class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1 text-on-surface font-mono text-[11px]">
+                  <option value="space">Spacebar (Bunnyhop)</option>
+                  <option value="e">E (Fast Loot/Interact)</option>
+                  <option value="f">F (Use / Action)</option>
+                  <option value="q">Q (Ability Spam)</option>
+                  <option value="1">1 (Primary Weapon)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-mono text-[10px] text-outline mb-1">Spam Speed: <span id="turbo-rate-val" class="text-primary font-bold">20/sec</span></label>
+                <input id="turbo-rate-slider" type="range" min="5" max="50" value="20" oninput="document.getElementById('turbo-rate-val').innerText = this.value + '/sec'; updateTurboSettings();" class="w-full cursor-pointer mt-1.5"/>
+              </div>
+            </div>
+
+            <div class="text-[11px] font-sans text-outline">
+              Hold down the target key to automatically trigger rapid-fire repeated keypresses.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick 1-Click Game & App Remap Presets -->
+        <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col gap-3">
+          <div class="flex items-center justify-between border-b border-outline-variant pb-2">
+            <h2 class="text-[14px] font-headline font-semibold text-on-surface">1-Click Quick Action Binds</h2>
+            <span class="text-[11px] font-mono text-outline">Bind common apps directly to function keys</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+            <button onclick="bindQuickKey('f8', 'launch', 'steam')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">sports_esports</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">F8 → Steam</span>
+              <span class="text-[9px] font-mono text-outline">Launch Game</span>
+            </button>
+            <button onclick="bindQuickKey('f9', 'launch', 'discord')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">chat</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">F9 → Discord</span>
+              <span class="text-[9px] font-mono text-outline">Launch Voice</span>
+            </button>
+            <button onclick="bindQuickKey('f10', 'launch', 'spotify')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">music_note</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">F10 → Spotify</span>
+              <span class="text-[9px] font-mono text-outline">Launch Music</span>
+            </button>
+            <button onclick="bindQuickKey('f11', 'media', 'mute')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">volume_off</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">F11 → Mute</span>
+              <span class="text-[9px] font-mono text-outline">Audio Toggle</span>
+            </button>
+            <button onclick="bindQuickKey('f12', 'media', 'play_pause')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">play_arrow</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">F12 → Play</span>
+              <span class="text-[9px] font-mono text-outline">Track Toggle</span>
+            </button>
+            <button onclick="bindQuickKey('pause', 'launch', 'taskmgr')" class="p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary flex flex-col items-center text-center transition-colors">
+              <span class="material-symbols-outlined text-primary text-[18px]">monitoring</span>
+              <span class="font-mono text-[11px] font-semibold text-on-surface mt-1">Pause → TaskMgr</span>
+              <span class="text-[9px] font-mono text-outline">System Monitor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Add Custom Remap Rule Form -->
+        <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col gap-3">
+          <h2 class="text-[14px] font-headline font-semibold text-on-surface">Add Custom Key Remap</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+            <div>
+              <label class="block font-mono text-[11px] text-outline mb-1">Trigger Key:</label>
+              <input id="new-key-trigger" type="text" placeholder="e.g. F8, insert, q, home" class="w-full bg-surface-container border border-outline-variant rounded px-2.5 py-1.5 text-on-surface font-mono text-[12px] focus:outline-none focus:border-primary"/>
+            </div>
+            <div>
+              <label class="block font-mono text-[11px] text-outline mb-1">Category:</label>
+              <select id="new-key-cat" onchange="onRemapCatChange(this.value)" class="w-full bg-surface-container border border-outline-variant rounded px-2.5 py-1.5 text-on-surface font-mono text-[12px] focus:outline-none focus:border-primary">
+                <option value="media">Media Control</option>
+                <option value="launch">Launch App / Command</option>
+                <option value="text">Text Snippet (Macro)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-mono text-[11px] text-outline mb-1">Action / Target:</label>
+              <div id="remap-val-container">
+                <select id="new-key-val-select" class="w-full bg-surface-container border border-outline-variant rounded px-2.5 py-1.5 text-on-surface font-mono text-[12px] focus:outline-none focus:border-primary">
+                  <option value="mute">Mute Audio</option>
+                  <option value="vol_up">Volume Up</option>
+                  <option value="vol_down">Volume Down</option>
+                  <option value="play_pause">Play / Pause</option>
+                  <option value="next">Next Track</option>
+                  <option value="prev">Previous Track</option>
+                </select>
+                <input id="new-key-val-input" type="text" placeholder="calc, steam, gg wp, etc." class="hidden w-full bg-surface-container border border-outline-variant rounded px-2.5 py-1.5 text-on-surface font-mono text-[12px] focus:outline-none focus:border-primary"/>
+              </div>
+            </div>
+            <div>
+              <button onclick="addRemapRule()" class="w-full py-1.5 rounded bg-primary text-surface font-mono text-[12px] font-semibold hover:bg-primary-container transition-colors">
+                + Add Remap Rule
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Rules List -->
+        <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col gap-3">
+          <h2 class="text-[14px] font-headline font-semibold text-on-surface">Active Remap Rules</h2>
+          <div id="remap-list" class="flex flex-col gap-2">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB 4: ACOUSTICS ==================== -->
+      <div id="view-sound" class="tab-view hidden flex flex-col gap-4">
+        
+        <div class="bg-surface-container-low p-3.5 rounded border border-outline-variant flex items-center justify-between">
+          <div>
+            <h1 class="text-[16px] font-headline font-semibold text-on-surface">Mechanical Switch Acoustic Simulator</h1>
+            <p class="text-[12px] font-sans text-outline mt-0.5">Synthesized tactile feedback on physical keystrokes.</p>
+          </div>
+          <!-- Master Sound Toggle (OFF by default) -->
+          <div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant">
+            <span class="font-mono text-[11px] text-outline">Engine Master Switch:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chk-sound-active" onchange="toggleSoundMaster(this.checked)" class="sr-only peer"/>
+              <div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Status notice indicating sound is OFF -->
+        <div id="sound-disabled-notice" class="bg-surface-container p-3 rounded border border-outline-variant flex items-center gap-2.5 text-[12px] font-sans text-outline">
+          <span class="material-symbols-outlined text-[16px] text-primary">volume_off</span>
+          <span>Typing sound simulation is currently <strong>muted</strong> by default. Toggle "Engine Master Switch" above only if you wish to enable audio.</span>
+        </div>
+
+        <!-- Sound Profile Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div onclick="selectSound('thock')" id="sound-card-thock" class="sound-card bg-surface-container-low p-4 rounded border-2 border-primary/60 transition-all cursor-pointer flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] font-headline font-semibold text-on-surface">🪵 Thocky Tactile</span>
+                <span class="badge-active font-mono text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">SELECTED</span>
+              </div>
+              <p class="text-[12px] font-sans text-outline mt-1.5">
+                Deep, wooden, satisfying tactile bottom-out sound modeled after lubed Holy Panda and Boba U4T switches.
+              </p>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="event.stopPropagation(); testSound('thock')" class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+                ▶ Sample Sound
+              </button>
+            </div>
+          </div>
+
+          <div onclick="selectSound('clicky')" id="sound-card-clicky" class="sound-card bg-surface-container-low p-4 rounded border-2 border-outline-variant hover:border-outline transition-all cursor-pointer flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] font-headline font-semibold text-on-surface">⚡ Crisp Clicky</span>
+                <span class="badge-active hidden font-mono text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">SELECTED</span>
+              </div>
+              <p class="text-[12px] font-sans text-outline mt-1.5">
+                Sharp, crisp high-frequency click modeled after Cherry MX Blue and Kailh Box Jade clickbars.
+              </p>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="event.stopPropagation(); testSound('clicky')" class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+                ▶ Sample Sound
+              </button>
+            </div>
+          </div>
+
+          <div onclick="selectSound('creamy')" id="sound-card-creamy" class="sound-card bg-surface-container-low p-4 rounded border-2 border-outline-variant hover:border-outline transition-all cursor-pointer flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] font-headline font-semibold text-on-surface">🧈 Creamy Linear</span>
+                <span class="badge-active hidden font-mono text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">SELECTED</span>
+              </div>
+              <p class="text-[12px] font-sans text-outline mt-1.5">
+                Silky smooth, low-pitched bottom-out sound reminiscent of factory-lubed Gateron Yellow linears.
+              </p>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="event.stopPropagation(); testSound('creamy')" class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+                ▶ Sample Sound
+              </button>
+            </div>
+          </div>
+
+          <div onclick="selectSound('bubble')" id="sound-card-bubble" class="sound-card bg-surface-container-low p-4 rounded border-2 border-outline-variant hover:border-outline transition-all cursor-pointer flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] font-headline font-semibold text-on-surface">🫧 Bubble Pop</span>
+                <span class="badge-active hidden font-mono text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">SELECTED</span>
+              </div>
+              <p class="text-[12px] font-sans text-outline mt-1.5">
+                Soft, soothing popping sound engineered for quiet late-night sessions and minimum distraction.
+              </p>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="event.stopPropagation(); testSound('bubble')" class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+                ▶ Sample Sound
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB 5: AMBIENT GLOW ==================== -->
+      <div id="view-glow" class="tab-view hidden flex flex-col gap-4">
+        
+        <div class="bg-surface-container-low p-3.5 rounded border border-outline-variant flex items-center justify-between">
+          <div>
+            <h1 class="text-[16px] font-headline font-semibold text-on-surface">Screen Border Ambient Lighting</h1>
+            <p class="text-[12px] font-sans text-outline mt-0.5">Click-through border glow around your desktop monitor that reacts to keystroke pulses.</p>
+          </div>
+          <!-- Glow Toggle -->
+          <div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant">
+            <span class="font-mono text-[11px] text-outline">Screen Glow Switch:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chk-glow-active" onchange="toggleGlowMaster(this.checked)" class="sr-only peer"/>
+              <div class="w-9 h-5 bg-surface-container-highest border border-outline-variant peer-checked:bg-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline peer-checked:after:bg-surface after:border-surface-container after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col gap-3">
+          <h2 class="text-[14px] font-headline font-semibold text-on-surface">Aura Color Presets</h2>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button onclick="setAuraColor('#00D2B4')" class="p-3 rounded bg-surface-container border border-primary/50 hover:border-primary flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-[#00D2B4]"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Obsidian Mint</div>
+                <div class="font-mono text-[10px] text-outline">#00D2B4</div>
+              </div>
+            </button>
+            <button onclick="setAuraColor('#00F0FF')" class="p-3 rounded bg-surface-container border border-outline-variant hover:border-outline flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-[#00F0FF]"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Electric Cyan</div>
+                <div class="font-mono text-[10px] text-outline">#00F0FF</div>
+              </div>
+            </button>
+            <button onclick="setAuraColor('#BD00FF')" class="p-3 rounded bg-surface-container border border-outline-variant hover:border-outline flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-[#BD00FF]"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Ultra Violet</div>
+                <div class="font-mono text-[10px] text-outline">#BD00FF</div>
+              </div>
+            </button>
+            <button onclick="setAuraColor('#FF0055')" class="p-3 rounded bg-surface-container border border-outline-variant hover:border-outline flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-[#FF0055]"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Crimson Red</div>
+                <div class="font-mono text-[10px] text-outline">#FF0055</div>
+              </div>
+            </button>
+            <button onclick="setAuraColor('#FFA657')" class="p-3 rounded bg-surface-container border border-outline-variant hover:border-outline flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-[#FFA657]"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Warm Amber</div>
+                <div class="font-mono text-[10px] text-outline">#FFA657</div>
+              </div>
+            </button>
+            <button onclick="setAuraColor('#FFFFFF')" class="p-3 rounded bg-surface-container border border-outline-variant hover:border-outline flex items-center gap-3 text-left transition-colors">
+              <span class="w-4 h-4 rounded-full bg-white"></span>
+              <div>
+                <div class="font-sans text-[12px] text-on-surface font-medium">Pure Studio</div>
+                <div class="font-mono text-[10px] text-outline">#FFFFFF</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="pt-3 border-t border-outline-variant flex items-center justify-between">
+            <span class="text-[12px] font-sans text-outline">Zero input interception — clicks pass directly through to games and apps.</span>
+            <button onclick="testGlowPulse()" class="px-4 py-1.5 rounded bg-surface-container-high border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors">
+              ⚡ Test Glow Pulse
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- 4. BOTTOM TELEMETRY BAR -->
+  <footer class="bg-surface-container-lowest text-on-surface-variant font-mono fixed bottom-0 left-0 w-full z-40 flex justify-between items-center h-6 px-4 border-t border-outline-variant select-none">
+    <div class="flex items-center gap-3 text-[11px]">
+      <div class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        <span class="text-primary font-medium">Profile Synchronized</span>
+      </div>
+      <span class="text-outline/40">|</span>
+      <span>Latency: <strong class="text-on-surface">0.24ms</strong></span>
+      <span class="text-outline/40">|</span>
+      <span>Engine: <strong class="text-on-surface">Active</strong></span>
+    </div>
+
+    <div class="hidden sm:flex items-center gap-3 text-[11px]">
+      <span class="flex items-center gap-1 text-on-surface-variant">
+        <span class="material-symbols-outlined text-[13px] text-primary">check_circle</span>
+        <span>Low-Latency Hook Running</span>
+      </span>
+      <span class="text-outline/40">|</span>
+      <span>Typing Sound: <strong id="bottom-sound-status" class="text-outline">Muted</strong></span>
+    </div>
+  </footer>
+
+  <!-- 5. JAVASCRIPT LOGIC & PYWEBVIEW BRIDGE -->
+  <script>
+    // State storage
+    let currentDpiStage = 1600;
+    let currentSpeed = 10;
+    let sniperSpeedLimit = 3;
+
+    const SPEED_MULTS = {
+      1: 0.03, 2: 0.06, 3: 0.12, 4: 0.25, 5: 0.38,
+      6: 0.50, 7: 0.62, 8: 0.75, 9: 0.88, 10: 1.0,
+      11: 1.25, 12: 1.50, 13: 1.75, 14: 2.00, 15: 2.25,
+      16: 2.50, 17: 2.75, 18: 3.00, 19: 3.25, 20: 3.50
+    };
+
+    function calculateEdpi() {
+      const mult = SPEED_MULTS[currentSpeed] || 1.0;
+      const edpi = Math.round(currentDpiStage * mult);
+      const text = edpi + ' eDPI';
+      const badge = document.getElementById('dash-edpi-badge');
+      const badge2 = document.getElementById('calc-edpi-badge');
+      if (badge) badge.innerText = text;
+      if (badge2) badge2.innerText = text;
+    }
+
+    // Safe bridge caller
+    function pycall(method, ...args) {
+      if (window.pywebview && window.pywebview.api && typeof window.pywebview.api[method] === 'function') {
+        return window.pywebview.api[method](...args);
+      }
+      return Promise.resolve(null);
+    }
+
+    // Switch Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+      const activeView = document.getElementById('view-' + tabId);
+      if (activeView) activeView.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        b.classList.remove('text-primary', 'bg-surface-container', 'border-l-2', 'border-primary', 'font-medium');
+        b.classList.add('text-on-surface-variant');
+      });
+      const activeBtn = document.getElementById('btn-tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('text-primary', 'bg-surface-container', 'border-l-2', 'border-primary', 'font-medium');
+        activeBtn.classList.remove('text-on-surface-variant');
+      }
+    }
+
+    // --- MOUSE & DPI HANDLERS ---
+    function selectDpiStage(dpi) {
+      currentDpiStage = parseInt(dpi);
+      pycall('set_dpi_stage', currentDpiStage).then(() => {
+        updateDpiStageUI(currentDpiStage);
+        calculateEdpi();
+      });
+    }
+
+    function applyCustomDpi() {
+      const val = parseInt(document.getElementById('custom-dpi-input').value);
+      if (val >= 200 && val <= 12000) {
+        selectDpiStage(val);
+      }
+    }
+
+    function updateDpiStageUI(dpi) {
+      document.querySelectorAll('.dpi-btn-stage').forEach(b => {
+        const d = parseInt(b.getAttribute('data-dpi'));
+        if (d === dpi) {
+          b.classList.remove('bg-surface-container', 'bg-surface-container-lowest', 'border-outline-variant', 'text-outline');
+          b.classList.add('bg-surface-container-high', 'border-primary', 'text-primary', 'font-bold');
+        } else {
+          b.classList.add('bg-surface-container-lowest', 'border-outline-variant', 'text-outline');
+          b.classList.remove('bg-surface-container-high', 'border-primary', 'text-primary', 'font-bold');
+        }
+      });
+      const activeText = document.getElementById('active-dpi-display');
+      if (activeText) activeText.innerText = 'STAGE: ' + dpi + ' DPI';
+      const customInput = document.getElementById('custom-dpi-input');
+      if (customInput) customInput.value = dpi;
+    }
+
+    // Non-blocking drag: fast memory update without system stutter
+    function onSpeedDrag(val) {
+      currentSpeed = parseInt(val);
+      const mult = SPEED_MULTS[currentSpeed] || 1.0;
+      document.getElementById('mouse-speed-val').innerText = currentSpeed + ' / 20 (' + mult.toFixed(2) + 'x)';
+      document.getElementById('mouse-speed-slider').value = currentSpeed;
+      calculateEdpi();
+      pycall('set_mouse_speed', currentSpeed, false);
+    }
+
+    // Commit to registry on mouse release
+    function onSpeedCommit(val) {
+      currentSpeed = parseInt(val);
+      pycall('set_mouse_speed', currentSpeed, true);
+    }
+
+    function onSniperLimitChange(val) {
+      sniperSpeedLimit = parseInt(val);
+      const mult = SPEED_MULTS[sniperSpeedLimit] || 0.12;
+      document.getElementById('sniper-limit-display').innerText = 'Speed ' + sniperSpeedLimit + ' / 20 (' + mult.toFixed(2) + 'x)';
+      document.getElementById('dash-sniper-label').innerText = sniperSpeedLimit + '/20 Precision Lock';
+      pycall('set_sniper_speed', sniperSpeedLimit);
+    }
+
+    function toggleAcceleration(enabled) {
+      pycall('set_acceleration', enabled);
+    }
+
+    function toggleSwap(swapped) {
+      pycall('set_buttons_swapped', swapped);
+    }
+
+    // Sniper Mode Handler (F7)
+    let isSniperActive = false;
+    function toggleSniper() {
+      pycall('toggle_sniper').then(res => {
+        isSniperActive = !!res;
+        updateSniperUI(isSniperActive);
+      });
+    }
+
+    function updateSniperUI(active) {
+      const text = document.getElementById('sniper-status-text');
+      const btn = document.getElementById('sniper-toggle-btn');
+      const dashBtn = document.getElementById('dash-sniper-btn');
+      if (active) {
+        if (text) {
+          text.innerText = 'ACTIVE (' + sniperSpeedLimit + '/20 AIM)';
+          text.className = 'text-[12px] font-mono text-primary font-bold';
+        }
+        if (btn) {
+          btn.innerText = 'Exit Sniper Clutch (F7)';
+          btn.className = 'w-full py-2 rounded bg-primary text-surface font-mono text-[11px] font-semibold';
+        }
+        if (dashBtn) {
+          dashBtn.innerText = 'ACTIVE';
+          dashBtn.className = 'px-2 py-0.5 rounded bg-primary text-surface font-mono text-[10px] font-bold';
+        }
+      } else {
+        if (text) {
+          text.innerText = 'STANDBY';
+          text.className = 'text-[12px] font-mono text-on-surface font-semibold';
+        }
+        if (btn) {
+          btn.innerText = 'Toggle Sniper Mode Now (F7)';
+          btn.className = 'w-full py-2 rounded bg-surface-container-high border border-outline-variant hover:border-primary font-mono text-[11px] text-on-surface transition-colors';
+        }
+        if (dashBtn) {
+          dashBtn.innerText = 'OFF';
+          dashBtn.className = 'px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant font-mono text-[10px] text-outline hover:text-on-surface';
+        }
+      }
+    }
+
+    // Auto-Clicker Handler (F6)
+    let isAcRunning = false;
+    function toggleAutoclicker() {
+      pycall('toggle_autoclicker').then(res => {
+        isAcRunning = !!res;
+        updateAcUI(isAcRunning);
+      });
+    }
+
+    function updateAcUI(running) {
+      const mainBtn = document.getElementById('ac-main-btn');
+      const dashBtn = document.getElementById('dash-ac-btn');
+      const statusBadge = document.getElementById('ac-status-badge');
+      if (running) {
+        if (mainBtn) {
+          mainBtn.innerText = '⏹ Stop Auto-Clicker (F6)';
+          mainBtn.className = 'w-full py-2 rounded bg-red-600 text-white font-mono text-[12px] font-semibold hover:bg-red-500 transition-colors';
+        }
+        if (dashBtn) {
+          dashBtn.innerText = 'ACTIVE';
+          dashBtn.className = 'px-2 py-0.5 rounded bg-primary text-surface font-mono text-[10px] font-bold';
+        }
+        if (statusBadge) {
+          statusBadge.innerText = 'RUNNING';
+          statusBadge.className = 'text-[11px] font-mono text-primary font-bold';
+        }
+      } else {
+        if (mainBtn) {
+          mainBtn.innerText = '▶ Start Auto-Clicker (F6)';
+          mainBtn.className = 'w-full py-2 rounded bg-primary text-surface font-mono text-[12px] font-semibold hover:bg-primary-container transition-colors';
+        }
+        if (dashBtn) {
+          dashBtn.innerText = 'OFF';
+          dashBtn.className = 'px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant font-mono text-[10px] text-outline hover:text-on-surface';
+        }
+        if (statusBadge) {
+          statusBadge.innerText = 'STANDBY';
+          statusBadge.className = 'text-[11px] font-mono text-outline';
+        }
+      }
+    }
+
+    function onCpsChange(val) {
+      const c = parseInt(val);
+      document.getElementById('cps-val').innerText = c + ' CPS';
+      document.getElementById('dash-ac-cps').innerText = c + ' CPS Configured';
+      pycall('set_autoclicker_cps', c);
+    }
+
+    function onAcButtonChange(val) {
+      pycall('set_autoclicker_button', val);
+    }
+
+    // --- KEYBOARD SUITE HANDLERS ---
+    function toggleWinLock(enabled) {
+      pycall('set_win_lock', enabled).then(active => {
+        document.getElementById('dash-winlock-chk').checked = !!active;
+        document.getElementById('chk-winlock-feature').checked = !!active;
+        const label = document.getElementById('winlock-status-label');
+        const badge = document.getElementById('badge-winlock');
+        const dashBadge = document.getElementById('dash-telemetry-winlock');
+        if (active) {
+          if (label) { label.innerText = 'LOCKED (Start Key Blocked in Games)'; label.className = 'text-primary font-semibold'; }
+          if (badge) { badge.classList.add('bg-primary/20', 'text-primary', 'border-primary/40'); badge.classList.remove('text-outline'); }
+          if (dashBadge) { dashBadge.innerText = 'Locked'; dashBadge.className = 'font-mono text-primary text-[13px] font-semibold'; }
+        } else {
+          if (label) { label.innerText = 'Disabled (Start Key Active)'; label.className = 'text-outline font-semibold'; }
+          if (badge) { badge.classList.remove('bg-primary/20', 'text-primary', 'border-primary/40'); badge.classList.add('text-outline'); }
+          if (dashBadge) { dashBadge.innerText = 'Unlocked'; dashBadge.className = 'font-mono text-outline text-[13px] font-semibold'; }
+        }
+      });
+    }
+
+    function toggleTurboMode(enabled) {
+      const key = document.getElementById('turbo-key-select').value;
+      const rate = parseInt(document.getElementById('turbo-rate-slider').value);
+      pycall('set_turbo', enabled, key, rate).then(res => {
+        document.getElementById('dash-turbo-chk').checked = !!res.enabled;
+        document.getElementById('chk-turbo-feature').checked = !!res.enabled;
+        document.getElementById('dash-turbo-label').innerText = res.key.toUpperCase() + ' [' + res.rate + ' CPS]';
+      });
+    }
+
+    function updateTurboSettings() {
+      const enabled = document.getElementById('chk-turbo-feature').checked;
+      const key = document.getElementById('turbo-key-select').value;
+      const rate = parseInt(document.getElementById('turbo-rate-slider').value);
+      pycall('set_turbo', enabled, key, rate).then(res => {
+        document.getElementById('dash-turbo-label').innerText = res.key.toUpperCase() + ' [' + res.rate + ' CPS]';
+      });
+    }
+
+    function bindQuickKey(key, type, val) {
+      pycall('add_remap', key, type, val).then(() => {
+        loadRemapRules();
+      });
+    }
+
+    // Remap UI Handlers
+    function onRemapCatChange(cat) {
+      const select = document.getElementById('new-key-val-select');
+      const input = document.getElementById('new-key-val-input');
+      if (cat === 'media') {
+        select.classList.remove('hidden');
+        input.classList.add('hidden');
+      } else {
+        select.classList.add('hidden');
+        input.classList.remove('hidden');
+        input.placeholder = cat === 'launch' ? 'steam, discord, taskmgr, calc' : 'Template text macro';
+      }
+    }
+
+    function addRemapRule() {
+      const trigger = document.getElementById('new-key-trigger').value.trim();
+      const cat = document.getElementById('new-key-cat').value;
+      const val = cat === 'media' ? document.getElementById('new-key-val-select').value : document.getElementById('new-key-val-input').value.trim();
+      if (!trigger || !val) return;
+      pycall('add_remap', trigger, cat, val).then(() => {
+        document.getElementById('new-key-trigger').value = '';
+        document.getElementById('new-key-val-input').value = '';
+        loadRemapRules();
+      });
+    }
+
+    function removeRemapRule(k) {
+      pycall('remove_remap', k).then(() => loadRemapRules());
+    }
+
+    function loadRemapRules() {
+      pycall('get_remaps').then(remaps => {
+        const list = document.getElementById('remap-list');
+        if (!list) return;
+        list.innerHTML = '';
+        if (!remaps || Object.keys(remaps).length === 0) {
+          list.innerHTML = '<div class="text-[12px] font-sans text-outline p-2">No custom remaps defined yet. Add one above!</div>';
+          return;
+        }
+        for (const [key, act] of Object.entries(remaps)) {
+          const row = document.createElement('div');
+          row.className = 'p-2.5 rounded bg-surface-container border border-outline-variant flex items-center justify-between font-mono text-[12px]';
+          row.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <span class="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold">${key.toUpperCase()}</span>
+              <span class="text-outline">→</span>
+              <span class="text-on-surface">[${act.type.toUpperCase()}] ${act.value}</span>
+            </div>
+            <button onclick="removeRemapRule('${key}')" class="px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant text-outline hover:text-red-400 hover:border-red-400 text-[11px] transition-colors">
+              Remove
+            </button>
+          `;
+          list.appendChild(row);
+        }
+      });
+    }
+
+    // --- SOUND FX HANDLERS ---
+    function selectSound(soundName, playTest = false) {
+      pycall('set_sound', soundName);
+      document.querySelectorAll('.sound-card').forEach(c => {
+        c.classList.remove('border-primary/60');
+        c.classList.add('border-outline-variant');
+        c.querySelector('.badge-active')?.classList.add('hidden');
+      });
+      const chosen = document.getElementById('sound-card-' + soundName);
+      if (chosen) {
+        chosen.classList.remove('border-outline-variant');
+        chosen.classList.add('border-primary/60');
+        chosen.querySelector('.badge-active')?.classList.remove('hidden');
+      }
+      if (playTest) {
+        testSound(soundName);
+      }
+    }
+
+    function testSound(soundName) {
+      pycall('play_test_sound', soundName);
+    }
+
+    function toggleSoundMaster(enabled) {
+      pycall('toggle_sound', enabled);
+      const notice = document.getElementById('sound-disabled-notice');
+      const bStatus = document.getElementById('bottom-sound-status');
+      if (enabled) {
+        if (notice) notice.classList.add('hidden');
+        if (bStatus) { bStatus.innerText = 'Active'; bStatus.className = 'text-primary'; }
+      } else {
+        if (notice) notice.classList.remove('hidden');
+        if (bStatus) { bStatus.innerText = 'Muted'; bStatus.className = 'text-outline'; }
+      }
+    }
+
+    // --- GLOW HANDLERS ---
+    function toggleGlowMaster(enabled) {
+      pycall('set_glow_enabled', enabled);
+    }
+
+    function setAuraColor(hexColor) {
+      pycall('set_glow_color', hexColor);
+      testGlowPulse();
+    }
+
+    function testGlowPulse() {
+      pycall('trigger_glow_test');
+    }
+
+    // --- PROFILES ---
+    function selectProfile(name) {
+      pycall('apply_preset', name).then(cfg => {
+        document.getElementById('side-profile-name').innerText = name;
+        const sel = document.getElementById('profile-select');
+        if (sel) sel.value = name;
+        if (cfg && cfg.mouse && cfg.mouse.speed) onSpeedDrag(cfg.mouse.speed);
+      });
+    }
+
+    // Periodic Telemetry Poll (KPS & Lock states)
+    setInterval(() => {
+      pycall('get_keyboard_stats').then(stats => {
+        if (!stats) return;
+        const totalKeys = document.getElementById('dash-telemetry-keys');
+        const kpsDisplay = document.getElementById('dash-telemetry-kps');
+        if (totalKeys) totalKeys.innerText = stats.total.toLocaleString();
+        if (kpsDisplay) kpsDisplay.innerText = stats.kps + ' KPS (' + stats.wpm + ' WPM)';
+      });
+
+      pycall('get_lock_states').then(locks => {
+        if (!locks) return;
+        const caps = document.getElementById('badge-caps');
+        const num = document.getElementById('badge-num');
+        if (caps) {
+          if (locks.caps) { caps.classList.add('bg-primary/20', 'text-primary', 'border-primary/40'); caps.classList.remove('text-outline'); }
+          else { caps.classList.remove('bg-primary/20', 'text-primary', 'border-primary/40'); caps.classList.add('text-outline'); }
+        }
+        if (num) {
+          if (locks.num) { num.classList.add('bg-primary/20', 'text-primary', 'border-primary/40'); num.classList.remove('text-outline'); }
+          else { num.classList.remove('bg-primary/20', 'text-primary', 'border-primary/40'); num.classList.add('text-outline'); }
+        }
+      });
+    }, 1000);
+
+    // Initialize state on load
+    window.addEventListener('pywebviewready', () => {
+      pycall('get_initial_state').then(state => {
+        if (!state) return;
+        if (state.speed) {
+          currentSpeed = state.speed;
+          onSpeedDrag(state.speed);
+        }
+        if (state.dpi_stage) updateDpiStageUI(state.dpi_stage);
+        if (state.sniper_speed) onSniperLimitChange(state.sniper_speed);
+        if (state.autoclicker_cps) onCpsChange(state.autoclicker_cps);
+        if (state.autoclicker_button) {
+          const acBtn = document.getElementById('sel-ac-btn');
+          if (acBtn) acBtn.value = state.autoclicker_button;
+        }
+        if (typeof state.acceleration !== 'undefined') {
+          const accChk = document.getElementById('chk-acc');
+          if (accChk) accChk.checked = !!state.acceleration;
+        }
+        if (typeof state.swap_buttons !== 'undefined') {
+          const swapChk = document.getElementById('chk-swap');
+          if (swapChk) swapChk.checked = !!state.swap_buttons;
+        }
+        if (state.sound) selectSound(state.sound, false);
+        
+        // Sound is OFF by default
+        const soundChk = document.getElementById('chk-sound-active');
+        if (soundChk) {
+          soundChk.checked = !!state.sound_enabled;
+          toggleSoundMaster(!!state.sound_enabled);
+        }
+
+        const glowChk = document.getElementById('chk-glow-active');
+        if (glowChk) {
+          glowChk.checked = !!state.glow_enabled;
+        }
+
+        if (typeof state.win_lock !== 'undefined') toggleWinLock(state.win_lock);
+        if (typeof state.turbo_enabled !== 'undefined') {
+          document.getElementById('dash-turbo-chk').checked = state.turbo_enabled;
+          document.getElementById('chk-turbo-feature').checked = state.turbo_enabled;
+          if (state.turbo_key) document.getElementById('turbo-key-select').value = state.turbo_key;
+          if (state.turbo_rate) document.getElementById('turbo-rate-slider').value = state.turbo_rate;
+        }
+
+        if (state.sniper) updateSniperUI(state.sniper);
+        if (state.profile) {
+          const sel = document.getElementById('profile-select');
+          if (sel) sel.value = state.profile;
+          document.getElementById('side-profile-name').innerText = state.profile;
+        }
+        calculateEdpi();
+        loadRemapRules();
+      });
+    });
+  </script>
+</body>
+</html>
